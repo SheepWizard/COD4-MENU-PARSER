@@ -1,0 +1,90 @@
+menu            -> { MenuDef*  }
+MenuDef         -> { ItemDef* }
+                -> { MenuStatement* }
+ItemDef         -> { ItemStatement* }
+MenuStatement   -> name String
+                -> fullscreen PrimaryExp
+                -> rect PrimaryExp PrimaryExp PrimaryExp PrimaryExp PrimaryExp PrimaryExp
+                -> rect PrimaryExp PrimaryExp PrimaryExp PrimaryExp PrimaryExp
+                -> rect PrimaryExp PrimaryExp PrimaryExp PrimaryExp
+                -> blurworld PrimaryExp
+                -> visible PrimaryExp
+                -> style PrimaryExp
+                -> border PrimaryExp
+                -> borderSize PrimaryExp
+                -> bordercolor PrimaryExp PrimaryExp PrimaryExp PrimaryExp
+                -> backcolor PrimaryExp PrimaryExp PrimaryExp PrimaryExp
+                -> forecolor PrimaryExp PrimaryExp PrimaryExp PrimaryExp
+                -> disablecolor PrimaryExp
+                -> background String
+                -> disablecolor PrimaryExp PrimaryExp PrimaryExp PrimaryExp
+                -> fadeamount PrimaryExp    
+                -> fadeClamp PrimaryExp
+                -> faceCycle PrimaryExp
+                -> fadeInAmount PrimaryExp
+                -> focuscolor PrimaryExp PrimaryExp PrimaryExp PrimaryExp
+                -> ownerdraw PrimaryExp
+                -> soundloop PrimaryExp
+                -> visible PrimaryExp
+                -> outOfBoundsClick
+                -> popup
+
+                -> onOpen { scriptStatement* }
+                -> onClose { scriptStatement* }
+                -> onESC { scriptStatement* }
+
+
+ItemStatement   -> name String
+                -> rect PrimaryExp PrimaryExp PrimaryExp PrimaryExp PrimaryExp PrimaryExp
+                -> rect PrimaryExp PrimaryExp PrimaryExp PrimaryExp PrimaryExp
+                -> rect PrimaryExp PrimaryExp PrimaryExp PrimaryExp
+                -> align PrimaryExp
+                -> backcolor PrimaryExp PrimaryExp PrimaryExp PrimaryExp
+                -> background String
+                -> border PrimaryExp
+                -> bordercolor PrimaryExp PrimaryExp PrimaryExp PrimaryExp
+                -> borderSize PrimaryExp
+                -> columns PrimaryExp* --not finished
+                -> elementheight PrimaryExp
+                -> elementwidth PrimaryExp
+                -> elementtype PrimaryExp
+                -> feeder PrimaryExp
+                -> forecolor PrimaryExp PrimaryExp PrimaryExp PrimaryExp
+                -> focusSound String
+                -> group String
+                -> maxchars PrimaryExp
+                -> maxCharsGotoNext
+                -> maxpaintchars PrimaryExp
+                -> notselectable PrimaryExp
+                -> origin PrimaryExp PrimaryExp
+                -> outlinecolor PrimaryExp PrimaryExp PrimaryExp PrimaryExp
+                -> special PrimaryExp
+                -> style PrimaryExp
+                -> text String
+                -> textalign PrimaryExp
+                -> textalignx PrimaryExp
+                -> textaligny PrimaryExp
+                -> textfile PrimaryExp
+                -> textfont PrimaryExp
+                -> textsavegame PrimaryExp
+                -> textscale PrimaryExp
+                -> textstyle PrimaryExp
+                -> type PrimaryExp
+                -> visible PrimaryExp
+                -> exp expression --not finished
+                -> autowrapped
+                -> decoration
+                -> horizontalscroll
+
+scriptStatement ->
+UIScripts       ->
+PrimaryExp      -> Int
+                -> String
+                -> Var
+                -> (Exp)
+Exp             -> PrimaryExp op
+String          -> "[A-Za-z0-9!"£$%^&*()_+-=[];'#,./{}:@~<>?|`\s]*"
+Int             -> [0-9]+
+Float           -> ([0-9]*\.[0-9]+)|([0-9]+\.[0-9]*)
+op              -> (\+|\*|\/|\*|\-|%)
+Var             -> [A-Za-z0-9]

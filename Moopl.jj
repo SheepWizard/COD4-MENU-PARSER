@@ -1,0 +1,450 @@
+options {
+  STATIC = false;
+}
+
+PARSER_BEGIN(MooplParser)
+  import syntaxtree.*;
+  import syntaxtree.interp.*;
+  import java.util.List;
+  import java.util.LinkedList;
+  public class MooplParser {
+  }
+PARSER_END(MooplParser)
+
+SKIP : /* Define white-space and comments here */
+{
+    " "
+  | "\t"
+  | "\n"
+  | "\r"
+  | "\f"
+  | < "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n") >
+  | <"/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+}
+
+TOKEN : /* Define the Moopl tokens here. */
+{
+  < PROC: "proc" >
+| < FUN: "fun" >
+| < CLASS: "class" >
+| < EXTENDS: "extends" >
+| < RETURN: "return" >
+| < ARRAYOF: "arrayof" >
+| < INT: "int" >
+| < BOOLEAN : "boolean" >
+| < IF: "if" >
+| < THEN: "then" >
+| < ELSE: "else" >
+| < WHILE: "while" >
+| < OUTPUT: "output" >
+| < LENGTH: "length" >
+| < TRUE: "true" >
+| < FALSE: "false" >
+| < SELF: "self" >
+| < NEW: "new" >
+| < OBJECT: "object" >
+| < EXCLAMATION: "!" >
+| < ISNULL: "isnull" >
+| < OPENCURL: "{" >
+| < CLOSECURL: "}" >
+| < SEMICOL: ";" >
+| < OPENBRAK: "(" >
+| < CLOSEBRAK: ")" >
+| < DO: "do" >
+| < COMMA: "," >
+| < EQUAL: "=" >
+| < OPENSQU: "[" >
+| < CLOSESQU: "]" >
+| < DOT: "." >
+| < OPENCOM: "/*" >
+| < CLOSECOM: "*/" >
+| < COMMENT: "//" >
+| < OP: ("and")|("<")|("==")|("div")|("+")|("-")|("*")>
+| < INTEGER_LITERAL: (["0"-"9"])+ >
+| < ID: ["a"-"z","A"-"Z"](["a"-"z","A"-"Z","0"-"9","_"])* >
+}
+
+/*
+ * TOKEN tester
+ */
+public void testTokens() :
+{
+  Token t;
+}
+{
+  ( ( ( t = <PROC>
+      | t = <FUN>
+      | t = <CLASS>
+        // ADD YOUR OWN TOKENS HERE AS YOU DEFINE EACH ONE
+      )
+      { System.out.println("Recognised as valid token: " + t.image); }
+    )
+  | ( t = <INTEGER_LITERAL>
+      { System.out.println("Recognised as INTEGER_LITERAL: " + t.image); }
+    )
+  | ( t = <ID>
+      { System.out.println("Recognised as ID: " + t.image); }
+    )
+  )*
+}
+
+
+/************************************
+ * The Moopl grammar starts here *
+ ************************************/
+
+
+public Program nt_Program() :
+{
+    ProcDecl p;
+    ClassDecl c;
+    List<ProcDecl> programs = new LinkedList<ProcDecl>();
+    List<ClassDecl> classes = new LinkedList<ClassDecl>();
+}
+{
+  (p=nt_ProcDecl() {programs.add(p);} )+ (c=nt_ClassDecl() {classes.add(c);})*
+  {
+      return new Program(programs, classes);
+  }
+}
+
+public ClassDecl nt_ClassDecl() :
+{
+    Token t;
+    Token t2;
+    FieldDecl f;
+    MethodDecl m;
+    List<FieldDecl> fields = new LinkedList<FieldDecl>();
+    List<MethodDecl> methods = new LinkedList<MethodDecl>();
+}
+{ 
+    /* this might need a + */
+      LOOKAHEAD (3)
+      <CLASS> t=<ID> <OPENCURL> (f=nt_FieldDecl() {fields.add(f); })* (m=nt_MethodDecl() {methods.add(m); } )* <CLOSECURL>
+      {
+        return new ClassDeclSimple(t.image, fields, methods);
+      }
+    | <CLASS> t=<ID> <EXTENDS> t2=<ID> <OPENCURL> (f=nt_FieldDecl() {fields.add(f); })* (m=nt_MethodDecl() {methods.add(m); } )* <CLOSECURL>
+    {
+        return new ClassDeclExtends(t.image, t2.image, fields, methods);
+    }
+}
+
+public MethodDecl nt_MethodDecl() :
+{
+    ProcDecl p;
+    FunDecl f;
+}
+{
+    p=nt_ProcDecl() 
+    {
+        return p;
+    }
+    | f=nt_FunDecl()
+    {
+        return f;
+    }
+}
+
+public FunDecl nt_FunDecl() :
+{
+    Token t;
+    Type ty;
+    List<Formal> f = new LinkedList<Formal>();
+    List<Stm> s = new LinkedList<Stm>();
+    Stm st;
+    Exp e;
+}
+{
+  <FUN> (ty=nt_TypeDecl()) t=<ID> <OPENBRAK> (f=nt_FormalListDecl()) <CLOSEBRAK> <OPENCURL> (st=nt_StatementDecl() {s.add(st);})* <RETURN> (e=nt_ExpDecl()) <SEMICOL> <CLOSECURL>
+  {
+      return new FunDecl(ty, t.image, f, s, e);
+  }
+}
+
+public ProcDecl nt_ProcDecl() :
+{
+    Token t;
+    List<Formal> f = new LinkedList<Formal>();
+    List<Stm> s = new LinkedList<Stm>();
+    Stm st;
+}
+{
+  <PROC> t=<ID> <OPENBRAK> (f=nt_FormalListDecl()) <CLOSEBRAK> <OPENCURL> (st=nt_StatementDecl() {s.add(st);})* <CLOSECURL> 
+  {
+      return new ProcDecl(t.image, f, s);
+  }
+}
+
+public FieldDecl nt_FieldDecl() :
+{
+    Type ty;
+    Token to;
+}
+{
+    (ty=nt_TypeDecl()) to=<ID> <SEMICOL>
+    {
+        return new FieldDecl(ty, to.image);
+    }
+}
+
+public Type nt_TypeDecl() :
+{
+    Type t;
+    Token to;
+}
+{
+      <ARRAYOF> <OPENBRAK> (t=nt_TypeDecl()) <CLOSEBRAK>
+      {
+          return new TypeArray(t);
+      }
+    | <BOOLEAN>
+    {
+        return new TypeBoolean();
+    }
+    | <INT>
+    {
+        return new TypeInt();
+    }
+    | to=<ID>
+    {
+        return new TypeClassType(to.image);
+    }
+}
+
+public List<Formal> nt_FormalListDecl() :
+{
+    List<Formal> f = new LinkedList<Formal>();
+    Type ty;
+    Token to;
+    Formal fo;
+}
+{
+      (ty=nt_TypeDecl()) to=<ID> {Formal fo2 = new Formal(ty,to.image); f.add(fo2); } (fo=nt_FormalRestDecl() {f.add(fo);} )*
+      {
+          return f;
+      }
+    | {} {return f;}
+}
+
+public Formal nt_FormalRestDecl() :
+{
+    Type t;
+    Token to;
+}
+{
+    <COMMA> (t=nt_TypeDecl()) to=<ID>
+    {
+        return new Formal(t, to.image);
+    }
+}
+
+public Stm nt_StatementDecl() :
+{
+    List<Stm> s = new LinkedList<Stm>();
+    List<Stm> s2 = new LinkedList<Stm>();
+    List<Exp> elist = new LinkedList<Exp>();
+    Exp e;
+    Exp e2;
+    Exp e3;
+    Token t;
+    FieldDecl f;
+
+}
+{
+      (s=nt_BlockDecl())
+      {
+          return new StmBlock(s);
+      }
+    | LOOKAHEAD (2)
+      t=<ID> <EQUAL> (e=nt_ExpDecl()) <SEMICOL>
+      {
+          Var v = new Var(t.image);
+          return new StmAssign(v, e);
+      }
+    | LOOKAHEAD (2)
+      (f=nt_FieldDecl())
+      {
+          return new StmVarDecl(f.t, f.id); 
+      }
+    | <IF> <OPENBRAK> (e=nt_ExpDecl()) <CLOSEBRAK> <THEN> (s=nt_BlockDecl()) <ELSE> (s2=nt_BlockDecl())
+    {
+        return new StmIf(e, new StmBlock(s), new StmBlock(s2));
+    }
+    | <WHILE> <OPENBRAK> (e=nt_ExpDecl()) <CLOSEBRAK> <DO> (s=nt_BlockDecl())
+    {
+        return new StmWhile(e, new StmBlock(s));
+    }
+    | <OUTPUT> (e=nt_ExpDecl()) <SEMICOL>
+    {
+        return new StmOutput(e);
+    }
+    | LOOKAHEAD (2)
+      (e=nt_PrimaryExpDecl()) <OPENSQU> (e2=nt_ExpDecl()) <CLOSESQU> <EQUAL> (e3=nt_ExpDecl()) <SEMICOL>
+      {
+          return new StmArrayAssign(e,e2,e3);
+      }
+    | (e=nt_PrimaryExpDecl()) <DOT> t=<ID> <OPENBRAK> (elist=nt_ExpListDecl()) <CLOSEBRAK> <SEMICOL>
+    {
+        return new StmCall(e, t.image, elist);
+    }
+}
+
+public Exp nt_ExpDecl() :
+{
+    Exp e1;
+    Exp e2;
+    Token t;
+    ExpOp.Op op = ExpOp.Op.AND;
+    List<Exp> elist = new LinkedList<Exp>();
+}
+{
+    (e1=nt_PrimaryExpDecl()) 
+    (
+           t=<OP> (e2=nt_PrimaryExpDecl())
+           {
+               
+               switch(t.image){
+                   case "and":
+                        op = op.AND;
+                        break;
+                   case "<":
+                        op = op.LESSTHAN;
+                        break;
+                   case "==":
+                        op = op.EQUALS;
+                        break;
+                   case "div":
+                        op = op.DIV;
+                        break;
+                   case "+":
+                        op = op.PLUS;
+                        break;
+                   case "-":
+                        op = op.MINUS;
+                        break;
+                   case "*":
+                        op = op.TIMES;
+                        break;
+                   default:
+                        op.valueOf(t.image);
+                        break;
+               }
+               return new ExpOp(e1, op, e2);
+           }
+         | <OPENSQU> (e2=nt_ExpDecl()) <CLOSESQU>
+         {
+             return new ExpArrayLookup(e1,e2);
+         }
+         | <DOT> 
+         (
+               <LENGTH>
+               {
+                   return new ExpArrayLength(e1);
+               }
+             | t=<ID> <OPENBRAK> (elist=nt_ExpListDecl()) <CLOSEBRAK>
+             {
+                 return new ExpCall(e1, t.image, elist);
+             }
+         )
+         | {} {return e1;}
+    )
+}
+
+public Exp nt_PrimaryExpDecl() :
+{
+    Token t;
+    Var v;
+    Type ty;
+    Exp e;
+    List<Exp> elist = new LinkedList<Exp>();
+}
+{
+      t=<INTEGER_LITERAL> 
+      {
+          return new ExpInteger(Integer.parseInt(t.image));
+      }
+    | <TRUE>
+    {
+        return new ExpTrue();
+    }
+    | <FALSE>
+    {
+        return new ExpFalse();
+    }
+    | t=<ID>
+    {
+        Var vi = new Var(t.image);
+        return new ExpVar(vi);
+    }
+    | <SELF>
+    {
+        return new ExpSelf();
+    }
+    | LOOKAHEAD (2)
+      <NEW> <ARRAYOF> <OPENBRAK> (ty=nt_TypeDecl()) <CLOSEBRAK> <OPENSQU> (e=nt_ExpDecl()) <CLOSESQU>
+      {
+        return new ExpNewArray(ty,e);
+      }
+    | <NEW> <OBJECT> t=<ID> <OPENBRAK> (elist=nt_ExpListDecl()) <CLOSEBRAK>
+    {
+        return new ExpNewObject(t.image, elist);
+    }
+    | <EXCLAMATION> (e=nt_PrimaryExpDecl())
+    {
+        return new ExpNot(e);
+    }
+    | <ISNULL> (e=nt_PrimaryExpDecl())
+    {
+        return new ExpIsnull(e);
+    }
+    | <OPENBRAK> (e=nt_ExpDecl()) <CLOSEBRAK>
+    {
+        return e;
+    }
+}
+
+public List<Exp> nt_ExpListDecl() :
+{
+    Exp e1;
+    Exp e2;
+    List<Exp> elist = new LinkedList<Exp>();
+}
+{
+      (e1=nt_ExpDecl() {elist.add(e1);}) (e2=nt_ExpRestDecl() {elist.add(e2);})*
+      {
+          return elist;    
+      }
+    | {} {return elist;}
+}
+
+public Exp nt_ExpRestDecl() :
+{
+    Exp e;
+}
+{
+    <COMMA> (e=nt_ExpDecl())
+    {
+        return e;
+    }
+}
+
+public List<Stm> nt_BlockDecl() :
+{
+    Stm st;
+    List<Stm> s = new LinkedList<Stm>();
+}
+{
+    <OPENCURL> (st=nt_StatementDecl() {s.add(st);} )* <CLOSECURL>
+    {
+        return s;
+    }
+}
+
+// TODO: ADD MISSING NON_TERMINALS
+
+public void eof() :
+{}
+{
+  <EOF>
+}

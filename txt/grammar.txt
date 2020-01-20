@@ -28,10 +28,13 @@ MenuStatement   -> name String
                 -> visible PrimaryExp
                 -> outOfBoundsClick
                 -> popup
+                -> legacySplitScreenScale
 
-                -> onOpen { scriptStatement* }
-                -> onClose { scriptStatement* }
-                -> onESC { scriptStatement* }
+                -> onOpen { scriptAction* }
+                -> onClose { scriptAction* }
+                -> onESC { scriptAction* }
+                -> execKey String {scriptAction* } --not dont
+                -> execKeyInt PrimaryExp {scriptAction*} -- not done
 
 
 ItemStatement   -> name String
@@ -75,14 +78,67 @@ ItemStatement   -> name String
                 -> autowrapped
                 -> decoration
                 -> horizontalscroll
+                
+                -> action { scriptAction* }
+                -> doubleclick { scriptAction* }
+                -> execKey String { scriptAction* }
+                -> execKeyInt PrimaryExp { scriptAction* }
+                -> focusDvar { scriptAction* }
+                -> leaveFocus { scriptAction* }
+                -> mouseEnter { scriptAction* }
+                -> mouseEnterText { scriptAction* }
+                -> mouseExit { scriptAction* }
+                -> mouseExitText { scriptAction* }
+                -> onFocus { scriptAction* }
 
-scriptStatement ->
+
+scriptAction    -> close String
+                -> closeForGametype String
+                -> exec String
+                -> execnow String --not done
+                -> execNowOnDvarFloatValue --not done
+                -> execNowOnDvarIntValue --not done
+                -> execNowOnDvarStringValue --not done
+                -> execOnDvarFloatValue --not done
+                -> execOnDvarIntValue --not done
+                -> execOnDvarStringValue --not done
+                -> fadein String
+                -> fadeout String
+                -> getautoupdate --not done
+                -> hide String
+                -> ingameclose --not done
+                -> ingameopen --not done
+                -> nextlevel --not done
+                -> nosavehide --not done
+                -> open String
+                -> openforgametype --not done
+                -> play String
+                -> playLooped String
+                -> profilehide --not done
+                -> profileshow --not done
+                -> scriptMenuRespondOnDvarFloatValue --not done
+                -> scriptMenuRespondOnDvarIntValue --not done
+                -> scriptMenuRespondOnDvarStringValue --not done
+                -> scriptmenuresponse String
+                -> setbackground String
+                -> setcolor PrimaryExp PrimaryExp PrimaryExp PrimaryExp
+                -> setdvar String
+                -> setcvar String
+                -> setfocus String
+                -> setfocusbydvar --not done
+                -> setitemcolor String String PrimaryExp PrimaryExp PrimaryExp PrimaryExp
+                -> show String
+                -> showGamerCard --not done
+                -> showhidenewgameresume --not done
+                -> uiScript UIScripts
+                -> writeSave --not done
+
 UIScripts       ->
 PrimaryExp      -> Int
                 -> String
                 -> Var
                 -> (Exp)
-Exp             -> PrimaryExp op
+Exp             -> PrimaryExp op Exp
 String          -> "[A-Za-z0-9!"£$%^&*()_+-=[];'#,./{}:@~<>?|`\s]*"
 Int             -> [0-9]+
 Float           -> ([0-9]*\.[0-9]+)|([0-9]+\.[0-9]*)

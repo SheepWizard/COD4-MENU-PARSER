@@ -223,6 +223,7 @@ const Lexer = function(file){
         createToken("AUTOWRAPPED", /autowrapped/);//itemdef
         createToken("DECORATION", /decoration/);//itemdef
         createToken("HORIZONTALSCROLL", /horizontalscroll/);//itemdef
+        createToken("LEGACYSPLITSCREENSCALE", /legacySplitScreenScale/);//menudef
         createToken("OUTOFBOUNDSCLICK", /outOfBoundsClick/);//menudef
         createToken("POPUP", /popup/);//menudef
 
@@ -254,12 +255,13 @@ const Lexer = function(file){
         createToken("OPEN", /open/);
         createToken("OPENFORGAMETYPE", /openforgametype/);
         createToken("PLAY", /play/);
+        createToken("PLAYLOOPED", /playLooped/)
         createToken("PROFILEHIDE", /profilehide/);
         createToken("PROFILESHOW", /profileshow/);
-        createToken("SAVEAVAILABLEHIDE", /saveAvailableHide/);
-        createToken("SAVEDELAY", /saveDelay/);
-        createToken("SAVEGAMEHIDE", /savegamehide/);
-        createToken("SAVEGAMESHOW", /savegameshow/);
+        //createToken("SAVEAVAILABLEHIDE", /saveAvailableHide/);
+        //createToken("SAVEDELAY", /saveDelay/);
+        //createToken("SAVEGAMEHIDE", /savegamehide/);
+        //createToken("SAVEGAMESHOW", /savegameshow/);
         createToken("SCRIPTMENURESPONDONDVARFLOATVALUE", /scriptMenuRespondOnDvarFloatValue/);
         createToken("SCRIPTMENURESPONDONDVARINTVALUE", /scriptMenuRespondOnDvarIntValue/);
         createToken("SCRIPTMENURESPONDONDVARSTRINGVALUE", /scriptMenuRespondOnDvarStringValue/);
@@ -267,10 +269,11 @@ const Lexer = function(file){
         createToken("SETBACKGROUND", /setbackground/);
         createToken("SETCOLOR", /setcolor/);
         createToken("SETDVAR", /setdvar/);
+        createToken("SETCVAR", /setcvar/);
         createToken("SETFOCUS", /setfocus/);
         createToken("SETFOCUSBYDVAR", /setfocusbydvar/);
         createToken("SETITEMCOLOR", /setitemcolor/);
-        createToken("SETSAVEEXECONSUCCESS", /setSaveExecOnSuccess/);
+        //createToken("SETSAVEEXECONSUCCESS", /setSaveExecOnSuccess/);
         createToken("SHOW", /show/);
         createToken("SHOWGAMERCARD", /showGamerCard/);
         createToken("SHOWHIDENEWGAMERESUME", /showhidenewgameresume/);

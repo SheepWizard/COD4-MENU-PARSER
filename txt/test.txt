@@ -1,6 +1,44 @@
 { 
     menuDef 
     {
-        style (1%2)
+        name "hello"
+        background "123"
+        fullscreen 1
+        blurworld 1
+        bordersize 1.42
+        bordercolor 1 1 0.23 0.12
+        rect 1 1 1 1 1
+        execKeyInt 1 {
+
+        } 
+
+        onClose{
+            close "hello"
+            close self
+        }
+        onOpen{
+
+        }
+        onEsc{
+
+        }
+
+        itemDef{
+            name "hello"
+            action{
+                close self
+            }
+            doubleclick{
+
+            }
+            rect 1 1 1 1
+            execKeyInt 1 {
+
+            } 
+            bordercolor 1 1 0.23 1
+            decoration
+            
+        }
+
     }
 }

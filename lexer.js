@@ -71,9 +71,7 @@ const Lexer = function(file){
             let tokenFound = false;
             for(let d = 0; d < delimiters.length; d++){
                 //delimiter found
-                if(inputString[i] === delimiters[d]){
-                    //console.log(i, word, { ...inputString[i] }, { ...delimiters[d] });
-                    
+                if(inputString[i] === delimiters[d]){                  
                     //check if we should ignore checking for token
                     let ignoreFound = false;
                     for(let ig = 0; ig < ignore.length; ig++){

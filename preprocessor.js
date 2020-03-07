@@ -45,7 +45,6 @@ const PreProcessor = function(file){
                         if (file[i + 1] === "/") {
                             inBlockComment = false;
                             i++
-                            continue;
                         }
                     }
                 }
@@ -56,7 +55,6 @@ const PreProcessor = function(file){
             if (inLineComment) {
                 if (file[i] === "\n") {
                     inLineComment = false;
-                    continue;
                 }
                 continue;
             }
@@ -65,7 +63,6 @@ const PreProcessor = function(file){
             if (inString) {
                 if (file[i] === "\"") {
                     inString = false;
-                    continue;
                 }
                 continue;
             }
@@ -113,19 +110,11 @@ const PreProcessor = function(file){
     }
 
     function lookAtProcessor(processor, start, end, lineCount){   
-        processor = processor.replace("\r","");
-        console.log( processor.length);
+        processor = processor.trimStart();
         let tkns = processor.replace("\r", "").split(/\s/);
-        tkns = tkns.filter((elm) => elm !== "");
-        console.log(tkns);
         switch(tkns[0]){
             case "define":
-                const endtknsLength = tkns.slice(2, tkns.length).join("").length;
-                console.log(endtknsLength);
-                const differance = (processor.length - tkns.slice(1,tkns.length).join(" ").length);
-                console.log(differance);
-                console.log(processor.length - (endtknsLength + differance));
-                console.log(processor.slice(processor.length - (endtknsLength + differance), processor.length))
+                console.log("defie");
                 const newDefine = {
                     identifier: "",
                     replacement: "",
@@ -138,10 +127,11 @@ const PreProcessor = function(file){
                     let inFunction = false;
                     let indentifer = "";
                     let input = "";
-                    let name = tkns.slice(1, tkns.length).join(" ");
+                    let name = processor.slice(6, processor.length);
 
                     //test to see if identifer takes parameters
                     for (let i = 0; i < name.length; i++) {
+                        //if it does check what parameters are 
                         if (inFunction) {
                             if (name[i] === ")") {
                                 if (input.trim() === "") {
@@ -151,11 +141,13 @@ const PreProcessor = function(file){
                                     newDefine.inputs.push(input.trim());
                                     input = "";
                                 }
+                                //We are finish, find replacement
                                 if (name[i + 1] !== undefined) {
-                                    newDefine.replacement = processor.slice(processor.length - (endtknsLength + differance), processor.length);
+                                    newDefine.replacement = name.slice(i + 2, name.length).trimStart();
                                 }
                                 break;
                             }
+                            //new parameter
                             else if (name[i] === ",") {
 
                                 if (input.trim() === "") {
@@ -174,19 +166,19 @@ const PreProcessor = function(file){
                             inFunction = true;
                             continue;
                         } else {
-                            if (name[i] === " ") {
+                            //No parameteres and we found identifier that is no empty string
+                            if (hasWhiteSpace(name[i]) && indentifer !== "") {
                                 if (name[i + 1] !== undefined) { 
-                                    //NOT WORKING ╰（‵□′）╯
-                                    //we need to get replacement from original string as so white space stays consistant.
-                                    newDefine.replacement = processor.slice(processor.length- (endtknsLength + differance) , processor.length);
+                                    newDefine.replacement = name.slice(i+1, name.length).trimStart();
                                 }
                                 break;
-                            }
-                            indentifer += name[i];
+                            } else if (!hasWhiteSpace(name[i])){
+                                indentifer += name[i];
+                            }      
                         }
                     }
 
-                    newDefine.identifier = indentifer;
+                    newDefine.identifier = indentifer.trimStart().replace("\r", "");
                     newDefine.replacement = newDefine.replacement.replace("\r", "");
 
                     //check if we already have define with same name
@@ -197,9 +189,7 @@ const PreProcessor = function(file){
                     } else {
                         warnings.push("line " + lineCount + ": redefintion of " + newDefine.identifier);
                         defineList[found] = newDefine;
-                    }
-
-                    
+                    }    
 
                 } else {
                     errors.push("line " + lineCount + ": #define without name");
@@ -211,7 +201,7 @@ const PreProcessor = function(file){
                 if(tkns.length > 1){
                     let name = tkns.slice(1, tkns.length).join(" ");
                     let inString = false;
-                    //String can be concatinated e.g. "ui/" "menudef.h" would work
+                    //String can be concatenated e.g. "ui/" "menudef.h" would work
                     for (let i = 0; i < name.length; i++){                          
                         if (name[i] === "\""){
                             if(inString){
@@ -244,7 +234,6 @@ const PreProcessor = function(file){
                 if(tkns.length > 1){
                     //undef should only read first word and ingore eveything after
                     if(tkns.length > 2){
-                        //
                         end = start + tkns.slice(0, 2).join(" ").length + 1;//+1 is for the #
                     }
                     defineList = defineList.filter((elm) => elm.identifier != tkns[1]);
@@ -260,7 +249,10 @@ const PreProcessor = function(file){
                 console.log("preprocessor not found");
                 return;
         }
-        
+    }
+
+    function hasWhiteSpace(s){
+        return /\s/.test(s);
     }
 
     return{

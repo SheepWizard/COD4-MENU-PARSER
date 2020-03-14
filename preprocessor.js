@@ -1,12 +1,16 @@
-const PreProcessor = function(file){
+import { Define, Input, Undef, Ifdef, Ifndef, Endif } from "./modules/Preprocessors.js";
 
-    let defineList = [];
-    const includeList = [];
-    const undefList = [];
-    const warnings = [];
-    const errors = [];
 
-    function process(){
+export default class PreProcessor{
+    constructor(file){
+        this.file = file;
+        this.preprocessorList = [];
+        this.warnings = [];
+        this.errors = [];
+    }
+
+    process(){
+        const file = this.file;
         let word = "";
         let processorFound = false;
         let processorStart;
@@ -16,8 +20,8 @@ const PreProcessor = function(file){
         let inString = false;
         let inLineComment = false;
         let inBlockComment = false;
-        
-        for(let i = 0; i < file.length; i++){
+
+        for (let i = 0; i < file.length; i++) {
 
             //special case for comments
             if (file[i] === "/") {
@@ -37,7 +41,7 @@ const PreProcessor = function(file){
                 inString = true;
                 continue;
             }
-            
+
             //special case for block comments
             if (inBlockComment) {
                 if (file[i] === "*") {
@@ -70,7 +74,7 @@ const PreProcessor = function(file){
             if (file[i] === "\n") {
                 lineCount++;
             }
-            
+
             if (file[i] === "#" && !processorFound && !inString && !inLineComment && !inBlockComment) {
                 processorFound = true;
                 processorStart = i;
@@ -78,51 +82,39 @@ const PreProcessor = function(file){
                 continue;
             }
 
-            if(processorFound){
+            if (processorFound) {
 
                 //check for multi line
-                if(file[i] === "\\"){
+                if (file[i] === "\\") {
                     newLine = true;
                     word += " ";
                     continue;
                 }
                 //CHECK FOR END OF FILE
-                if (file[i] === "\n"){
-                    if (newLine){
+                if (file[i] === "\n") {
+                    if (newLine) {
                         newLine = false;
-                    }else{
+                    } else {
                         processorFound = false;
                         newLine = false;
                         processorEnd = i;
-                        lookAtProcessor(word, processorStart, processorEnd, lineCount);  
-                    }    
+                        this.lookAtProcessor(word, processorStart, processorEnd, lineCount);
+                    }
                 }
                 word += file[i];
             }
         }
-        console.log("Warnings: " + warnings);
-        console.log(`Errors: ${errors}`);
-        console.log(defineList);
-        console.log(includeList);
-        console.log(undefList);
-
-        return "done";
+        console.log("Warnings: " + this.warnings);
+        console.log(`Errors: ${this.errors}`);
+        console.log(this.preprocessorList);
     }
 
-    function lookAtProcessor(processor, start, end, lineCount){   
+    lookAtProcessor(processor, start, end, lineCount){
         processor = processor.trimStart();
         let tkns = processor.replace("\r", "").split(/\s/);
-        switch(tkns[0]){
+        switch (tkns[0]) {
             case "define":
-                console.log("defie");
-                const newDefine = {
-                    identifier: "",
-                    replacement: "",
-                    function: false,
-                    inputs: [],
-                    start: start,
-                    end: end,
-                };
+                const newDefine = new Define(start, end);
                 if (tkns.length > 1) {
                     let inFunction = false;
                     let indentifer = "";
@@ -135,7 +127,7 @@ const PreProcessor = function(file){
                         if (inFunction) {
                             if (name[i] === ")") {
                                 if (input.trim() === "") {
-                                    errors.push("line " + lineCount + ": invalid define parameter");
+                                    this.errors.push("line " + lineCount + ": invalid define parameter");
                                     return;
                                 } else {
                                     newDefine.inputs.push(input.trim());
@@ -151,7 +143,7 @@ const PreProcessor = function(file){
                             else if (name[i] === ",") {
 
                                 if (input.trim() === "") {
-                                    errors.push("line " + lineCount + ": invalid define parameter");
+                                    this.errors.push("line " + lineCount + ": invalid define parameter");
                                     return;
                                 } else {
                                     newDefine.inputs.push(input.trim());
@@ -167,14 +159,14 @@ const PreProcessor = function(file){
                             continue;
                         } else {
                             //No parameteres and we found identifier that is no empty string
-                            if (hasWhiteSpace(name[i]) && indentifer !== "") {
-                                if (name[i + 1] !== undefined) { 
-                                    newDefine.replacement = name.slice(i+1, name.length).trimStart();
+                            if (this.hasWhiteSpace(name[i]) && indentifer !== "") {
+                                if (name[i + 1] !== undefined) {
+                                    newDefine.replacement = name.slice(i + 1, name.length).trimStart();
                                 }
                                 break;
-                            } else if (!hasWhiteSpace(name[i])){
+                            } else if (!this.hasWhiteSpace(name[i])) {
                                 indentifer += name[i];
-                            }      
+                            }
                         }
                     }
 
@@ -182,80 +174,105 @@ const PreProcessor = function(file){
                     newDefine.replacement = newDefine.replacement.replace("\r", "");
 
                     //check if we already have define with same name
-                    const found = defineList.findIndex((elm) => elm.identifier == newDefine.identifier);
+                    const found = this.preprocessorList.findIndex((elm) => {
+                        return elm.identifier == newDefine.identifier && elm.type === "define";
+                    });
 
                     if (found === -1) {
-                        defineList.push(newDefine);
+                        this.preprocessorList.push(newDefine);
                     } else {
-                        warnings.push("line " + lineCount + ": redefintion of " + newDefine.identifier);
-                        defineList[found] = newDefine;
-                    }    
+                        this.warnings.push("line " + lineCount + ": redefintion of " + newDefine.identifier);
+                        this.preprocessorList.push(newDefine);
+                        this.preprocessorList[found].active = false;
+                    }
 
                 } else {
-                    errors.push("line " + lineCount + ": #define without name");
+                   this. errors.push("line " + lineCount + ": #define without name");
                     return;
                 }
                 break;
             case "include":
                 let directory = "";
-                if(tkns.length > 1){
+                if (tkns.length > 1) {
                     let name = tkns.slice(1, tkns.length).join(" ");
                     let inString = false;
                     //String can be concatenated e.g. "ui/" "menudef.h" would work
-                    for (let i = 0; i < name.length; i++){                          
-                        if (name[i] === "\""){
-                            if(inString){
+                    for (let i = 0; i < name.length; i++) {
+                        if (name[i] === "\"") {
+                            if (inString) {
                                 inString = false;
                                 continue;
                             }
                             inString = true;
                             continue;
                         }
-                        if(inString){
+                        if (inString) {
                             directory += name[i];
                         }
                     }
-                    if(inString){
-                        errors.push("line " + lineCount + ": include string not closed");
+                    if (inString) {
+                        this.errors.push("line " + lineCount + ": include string not closed");
                         return;
-                    }else{
-                        includeList.push({
-                            file:directory,
-                            start: start,
-                            end: end,
-                        });
+                    } else {
+                        this.preprocessorList.push(new Input(directory, start, end));
                     }
-                }else{
-                    errors.push("line " + lineCount + ": #include without file name");
+                } else {
+                    this.errors.push("line " + lineCount + ": #include without file name");
                     return;
                 }
                 break;
             case "undef":
-                if(tkns.length > 1){
+                if (tkns.length > 1) {
                     //undef should only read first word and ingore eveything after
-                    if(tkns.length > 2){
+                    if (tkns.length > 2) {
                         end = start + tkns.slice(0, 2).join(" ").length + 1;//+1 is for the #
                     }
-                    defineList = defineList.filter((elm) => elm.identifier != tkns[1]);
-                    undefList.push({
-                        start: start,
-                        end: end,
+                    const found = this.preprocessorList.findIndex((elm) => {
+                        return elm.identifier == tkns[1] && elm.type === "define" && elm.active;
                     });
-                }else{
-                    errors.push("line " + lineCount + ": undef without name");
-                } 
+                    if(found !== -1){
+                        this.preprocessorList[found].active = false;
+                    }
+
+                    this.preprocessorList.push(new Undef(start,end));
+                } else {
+                    this.errors.push("line " + lineCount + ": undef without name");
+                }
+                break;
+            case "ifdef":
+                if(tkns.length > 1){
+                    if (tkns.length > 2) {
+                        end = start + tkns.slice(0, 2).join(" ").length + 1;//+1 is for the #
+                    } 
+                    this.preprocessorList.push(new Ifdef(start, end));
+                } else {
+                    this.errors.push("line " + lineCount + ": ifdef without name");
+                }
+                break;
+            case "ifndef":
+                if (tkns.length > 1) {
+                    if (tkns.length > 2) {
+                        end = start + tkns.slice(0, 2).join(" ").length + 1;//+1 is for the #
+                    }
+                    this.preprocessorList.push(new Ifndef(start, end));
+                } else {
+                    this.errors.push("line " + lineCount + ": ifndef without name");
+                }
+                break;
+            case "endif":
+                if(tkns.length > 1){
+                    end = start + tkns.slice(0, 1).join(" ").length + 1;//+1 is for the #
+                }
+                this.preprocessorList.push(new Endif(start, end));
                 break;
             default:
-                console.log("preprocessor not found");
+                this.warnings.push(`line ${lineCount}: Preprocessor not reconised: ${processor}`)
                 return;
         }
     }
 
-    function hasWhiteSpace(s){
+    hasWhiteSpace(s) {
         return /\s/.test(s);
     }
-
-    return{
-        process: process,
-    }
 }
+

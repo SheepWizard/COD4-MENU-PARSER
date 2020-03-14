@@ -1,4 +1,8 @@
 
+import PreProcessor from "./preprocessor.js";
+
+
+
 function init(){
     eventListeners();
 }
@@ -11,8 +15,10 @@ function fileReader(event){
     let reader = new FileReader();
     const file = event.target.files[0];
     reader.onload = () => {
-        const preProcessor = PreProcessor(reader.result.trim());
-        console.log(preProcessor.process());
+        const preProccessor = new PreProcessor(reader.result.trim());
+        preProccessor.process();
+        // const preProcessor = PreProcessor(reader.result.trim());
+        // console.log(preProcessor.process());
         //  const lexer = Lexer(reader.result);
         //  const tokens = lexer.getTokens();
         //  console.log(tokens);

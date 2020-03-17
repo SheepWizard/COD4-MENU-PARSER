@@ -1,4 +1,13 @@
 
+export const types = {
+    define: "define",
+    input: "input",
+    undef: "undef",
+    ifdef: "ifdef",
+    ifndef: "ifndef",
+    endif: "endif",
+};
+
 export class Preprocessor{
     constructor(type, start, end){
         this.type = type;
@@ -9,8 +18,8 @@ export class Preprocessor{
 
 export class Define extends Preprocessor{
     constructor(start,end){
-        super("define",start,end);
-        this.identifer = "";
+        super(types.define,start,end);
+        this.identifier = "";
         this.replacement = "";
         this.function = false;
         this.inputs = [];
@@ -21,31 +30,46 @@ export class Define extends Preprocessor{
 
 export class Input extends Preprocessor{
     constructor(directory,start,end){
-        super("input", start, end);
+        super(types.input, start, end);
         this.directory = directory;
     }
 }
 
 export class Undef extends Preprocessor{
-    constructor(start, end){
-        super("undef", start, end);
+    constructor(def,start, end){
+        super(types.undef, start, end);
+        this.identifier = def;
     }
 }
 
 export class Ifdef extends Preprocessor {
     constructor(start, end) {
-        super("ifdef", start, end);
+        super(types.ifdef, start, end);
     }
 }
 
 export class Ifndef extends Preprocessor {
     constructor(start, end) {
-        super("ifndef", start, end);
+        super(types.ifndef, start, end);
     }
 }
 
 export class Endif extends Preprocessor {
     constructor(start, end) {
-        super("endif", start, end);
+        super(types.endif, start, end);
+    }
+}
+
+export class InString{
+    constructor(start,end){
+        this.start = start;
+        this.end = end;
+    }
+}
+
+export class InComment{
+    constructor(start, end) {
+        this.start = start;
+        this.end = end;
     }
 }

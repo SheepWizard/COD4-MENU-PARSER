@@ -16,7 +16,7 @@ function fileReader(event){
     const file = event.target.files[0];
     reader.onload = () => {
         const preProccessor = new PreProcessor(reader.result.trim());
-        preProccessor.process();
+        preProccessor.run();
         // const preProcessor = PreProcessor(reader.result.trim());
         // console.log(preProcessor.process());
         //  const lexer = Lexer(reader.result);

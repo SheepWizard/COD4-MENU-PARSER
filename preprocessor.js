@@ -1,4 +1,4 @@
-import { Define, Input, Undef, Ifdef, Ifndef, Endif } from "./modules/Preprocessors.js";
+import { Define, Input, Undef, Ifdef, Ifndef, Endif, types, InString, InComment } from "./modules/Preprocessors.js";
 
 
 export default class PreProcessor{
@@ -7,6 +7,14 @@ export default class PreProcessor{
         this.preprocessorList = [];
         this.warnings = [];
         this.errors = [];
+        this.newFile = file;
+        this.offset = 0;
+        this.currentlyDefined = [];
+    }
+
+    run(){
+        this.process();
+        this.lookat();
     }
 
     process(){
@@ -117,11 +125,11 @@ export default class PreProcessor{
                 const newDefine = new Define(start, end);
                 if (tkns.length > 1) {
                     let inFunction = false;
-                    let indentifer = "";
+                    let identifier = "";
                     let input = "";
                     let name = processor.slice(6, processor.length);
 
-                    //test to see if identifer takes parameters
+                    //test to see if identifier takes parameters
                     for (let i = 0; i < name.length; i++) {
                         //if it does check what parameters are 
                         if (inFunction) {
@@ -159,18 +167,18 @@ export default class PreProcessor{
                             continue;
                         } else {
                             //No parameteres and we found identifier that is no empty string
-                            if (this.hasWhiteSpace(name[i]) && indentifer !== "") {
+                            if (this.hasWhiteSpace(name[i]) && identifier !== "") {
                                 if (name[i + 1] !== undefined) {
                                     newDefine.replacement = name.slice(i + 1, name.length).trimStart();
                                 }
                                 break;
                             } else if (!this.hasWhiteSpace(name[i])) {
-                                indentifer += name[i];
+                                identifier += name[i];
                             }
                         }
                     }
 
-                    newDefine.identifier = indentifer.trimStart().replace("\r", "");
+                    newDefine.identifier = identifier.trimStart().replace("\r", "");
                     newDefine.replacement = newDefine.replacement.replace("\r", "");
 
                     //check if we already have define with same name
@@ -226,15 +234,9 @@ export default class PreProcessor{
                     //undef should only read first word and ingore eveything after
                     if (tkns.length > 2) {
                         end = start + tkns.slice(0, 2).join(" ").length + 1;//+1 is for the #
+                        console.log(end);
                     }
-                    const found = this.preprocessorList.findIndex((elm) => {
-                        return elm.identifier == tkns[1] && elm.type === "define" && elm.active;
-                    });
-                    if(found !== -1){
-                        this.preprocessorList[found].active = false;
-                    }
-
-                    this.preprocessorList.push(new Undef(start,end));
+                    this.preprocessorList.push(new Undef(tkns[1], start,end));
                 } else {
                     this.errors.push("line " + lineCount + ": undef without name");
                 }
@@ -274,5 +276,121 @@ export default class PreProcessor{
     hasWhiteSpace(s) {
         return /\s/.test(s);
     }
+
+    lookat(){
+        for (let i = 0; i < this.preprocessorList.length; i++){
+            const item = this.preprocessorList[i];
+            switch (item.type){
+                case types.define:
+                    this.currentlyDefined.push(item);
+                    let end = this.newFile.length;
+                    let offset = 0;
+                    //check if we undef at some point and get where we should stop looking in string
+                    for (let x = i; x < this.preprocessorList.length; x++){
+                        if(this.preprocessorList[x].type === types.undef){
+                            if (this.preprocessorList[x].identifier === item.identifier){       
+                                end = this.preprocessorList[x].start;
+                            }
+                        }
+                    }
+
+
+                    //look through file and replace identifier with replacement
+                    let section = this.newFile.slice(item.end, end);
+                    if(!item.function){
+                        const results = this.searchSection(section, item.identifier, item.replacement);
+                        section = results.section;
+                        offset = results.offset;
+
+                        this.insertSection(section, item.end, end);
+                    }
+                    
+
+
+                    this.removeItem(item);
+                    console.log(`Section ${this.newFile}`);
+                    //apply offset as we modified a section of the string
+                    /*
+                        This offset only needs to be applied after lines where we added the replacement 🤔
+                    */
+                    //this.offset += offset;
+                    break;
+                case types.input:
+                    break;
+                case types.undef:
+                    break;
+                case types.ifdef:
+                    break;
+                case types.ifndef:
+                    break;
+                case types.endif:
+                    break;
+            }
+        }
+        console.log(`Original \n ${this.file}`);
+        console.log(`New \n ${this.newFile}`);
+    }
+
+    searchSection(section, identifier, replacement){
+
+        /*
+            Need to check if in a string or comment 
+        */
+
+        let found = 0;
+        let flag1 = false;
+        let flag2 = false;
+        let offset = 0;
+        let newSection = "";
+        const regex = new RegExp(identifier, "g");
+        while (found !== -1){
+            //search for identifier
+            found = section.search(regex);
+            if(found !== -1){
+                //if found check it has whitespace infront and behind it
+                if(found !== 0){
+                    if(this.hasWhiteSpace(section[found-1])){
+                        flag1 = true;
+                    }
+                }else{
+                    flag1 = true;
+                }
+                if(found !== section.length-1){
+                    if(this.hasWhiteSpace(section[found + identifier.length])){
+                        flag2 = true;
+                    }
+                }else{
+                    flag2 = true;
+                }
+                //if it does remove it and replace with replacement
+                if (flag1 && flag2) {
+                    newSection += section.slice(0, found) + replacement;
+                    flag1 = false;
+                    flag2 = false;
+                    offset += identifier.length - replacement.length;
+                    section = section.slice(found + identifier.length, section.length);
+                }
+            }else{
+                break;
+            }
+      
+        }
+        newSection += section;        
+        return {section: newSection, offset: offset};
+    }
+
+    //insert a new section into file
+    insertSection(section, start, end){
+        this.newFile = this.newFile.slice(0, start) + section + this.newFile.slice(end, this.newFile.length);
+    }
+
+    //remove an preprocessor from file
+    removeItem(item){
+        const start = this.newFile.slice(0,item.start-this.offset);
+        const end = this.newFile.slice(item.end-this.offset, this.newFile.length);
+        this.newFile = start + end;
+        this.offset += item.end - item.start;
+    }
+
 }
 

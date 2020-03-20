@@ -1,497 +1,504 @@
 "use strict";
 
-const Parser = function (tokens){   
 
-    function parse(){
-        const errors = [];
-        let index = 0;
-        let tok = tokens[index].token;
-        while(tok != undefined){
-            Menu();
+export default class Parser{
+    constructor(){
+        this.tokens = [];
+        this.tok;
+        this.index = 0;
+        this.errors = [];
+    }
+
+    setTokens(tk){
+        this.tokens = tk;
+    }
+
+    parse(){
+        this.errors = [];
+        this.index = 0;
+        this.tok = this.tokens[this.index].token;
+        while (this.tok != undefined) {
+            this.Menu();
         }
+        return this.errors;
+    }
 
-        return errors;
 
-        function Menu(){
-            if (tok === "OPENBRACKET"){
-                eat();
-                while (tok === "NEWLINE") {
-                    newLine();
-                }
-                while (tok !== "CLOSEBRACKET" && tok !== undefined){
-                    MenuDef();
-                }
-                if (tok === "CLOSEBRACKET" ){
-                    eat();
-                    newLine();
-                }else{
-                    error("Expected close bracket \"}\".");
-                }
+    Menu() {
+        if (this.tok === "OPENBRACKET") {
+            this.eat();
+            while (this.tok === "NEWLINE") {
+                this.newLine();
             }
-            else{
-                error("Expected open bracket \"{\".");
+            while (this.tok !== "CLOSEBRACKET" && this.tok !== undefined) {
+                this.MenuDef();
             }
-        }
-
-        function MenuDef(){
-            if (tok === "MENUDEF"){
-                eat();
-                while (tok === "NEWLINE") {
-                    newLine();
-                }
-                if (tok === "OPENBRACKET"){
-                    eat();
-                    newLine();
-
-                    while (tok !== "CLOSEBRACKET" && tok !== undefined){
-
-                        if (tok === "ITEMDEF"){
-                            eat();
-                            while (tok === "NEWLINE") {
-                                newLine();
-                            }
-                            if (tok === "OPENBRACKET"){
-                                eat();
-                                newLine();
-
-                                while (tok !== "CLOSEBRACKET" && tok !== undefined){
-
-                                    if (tok === "ACTION" || tok === "DOUBLECLICK" || tok === "FOCUSDVAR" || tok === "LEAVEFOCUS" || tok === "MOUSEENTER" || tok === "MOUSEENTERTEXT" || tok === "MOUSEEXIT" || tok === "MOUSEEXITTEXT" || tok === "ONFOCUS"){
-                                        eat();
-                                        while (tok === "NEWLINE") {
-                                            newLine();
-                                        }
-                                        if (tok === "OPENBRACKET") {
-                                            eat();
-                                            newLine();
-                                            while (tok !== "CLOSEBRACKET" && tok !== undefined) {
-                                                scriptActions();
-                                            }
-                                            if (tok === "CLOSEBRACKET") {
-                                                eat();
-                                                newLine();
-                                            } else {
-                                                error("Expected close bracket \"}\".");
-                                            }
-                                        } else {
-                                            error("Expected open bracket \"{\".");
-                                        }
-                                    }
-                                    else if (tok === "EXECKEY") {
-                                        eat();
-                                        while (tok === "NEWLINE") {
-                                            newLine();
-                                        }
-                                        IsString();
-                                        if (tok === "OPENBRACKET") {
-                                            eat();
-                                            newLine();
-                                            while (tok !== "CLOSEBRACKET" && tok !== undefined) {
-                                                scriptActions();
-                                            }
-                                            if (tok === "CLOSEBRACKET") {
-                                                eat();
-                                                newLine();
-                                            } else {
-                                                error("Expected close bracket \"}\".");
-                                            }
-                                        } else {
-                                            error("Expected open bracket \"{\".");
-                                        }
-
-                                    }
-                                    else if (tok === "EXECKEYINT") {
-                                        eat();
-                                        while (tok === "NEWLINE") {
-                                            newLine();
-                                        }
-                                        PrimaryExp();
-                                        if (tok === "OPENBRACKET") {
-                                            eat();
-                                            newLine();
-                                            while (tok !== "CLOSEBRACKET" && tok !== undefined) {
-                                                scriptActions();
-                                            }
-                                            if (tok === "CLOSEBRACKET") {
-                                                eat();
-                                                newLine();
-                                            } else {
-                                                error("Expected close bracket \"}\".");
-                                            }
-                                        } else {
-                                            error("Expected open bracket \"{\".");
-                                        }
-
-                                    }else{
-                                        ItemStatement();
-                                    }   
-
-                                    
-                                    
-                                }
-                                if (tok === "CLOSEBRACKET") {                                   
-                                    eat();
-                                    newLine();
-                                } else {
-                                    error("Expected close bracket \"}\".");
-                                }
-
-                            }else{
-                                error("Expected open bracket \"{\".");
-                            }
-                        }
-                        else if (tok === "ONCLOSE" || tok === "ONESC" || tok === "ONOPEN"){
-                            eat();
-                            while (tok === "NEWLINE") {
-                                newLine();
-                            }
-                            if (tok === "OPENBRACKET"){
-                                eat();
-                                newLine();
-                                while (tok !== "CLOSEBRACKET" && tok !== undefined) {
-                                    scriptActions();
-                                }
-                                if (tok === "CLOSEBRACKET") {
-                                    eat();
-                                    newLine();
-                                } else {
-                                    error("Expected close bracket \"}\".");
-                                }
-                            }else {
-                                error("Expected open bracket \"{\".");
-                            }
-                        }
-                        else if(tok === "EXECKEY"){
-                            eat();
-                            while (tok === "NEWLINE") {
-                                newLine();
-                            }
-                            IsString();
-                            if(tok === "OPENBRACKET"){
-                                eat();
-                                newLine();
-                                while (tok !== "CLOSEBRACKET" && tok !== undefined) {
-                                    scriptActions();
-                                }
-                                if (tok === "CLOSEBRACKET") {
-                                    eat();
-                                    newLine();
-                                } else {
-                                    error("Expected close bracket \"}\".");
-                                }
-                            }else {
-                                error("Expected open bracket \"{\".");
-                            }
-
-                        }
-                        else if (tok === "EXECKEYINT"){
-                            eat();
-                            while (tok === "NEWLINE") {
-                                newLine();
-                            }
-                            PrimaryExp();
-                            if (tok === "OPENBRACKET") {
-                                eat();
-                                newLine();
-                                while (tok !== "CLOSEBRACKET" && tok !== undefined) {
-                                    scriptActions();
-                                }
-                                if (tok === "CLOSEBRACKET") {
-                                    eat();
-                                    newLine();
-                                } else {
-                                    error("Expected close bracket \"}\".");
-                                }
-                            } else {
-                                error("Expected open bracket \"{\".");
-                            }
-                        }
-                        else{
-                            MenuStatement();
-                        }               
-         
-                    }            
-
-                    while(tok === "NEWLINE"){
-                        newLine();
-                    }
-
-                    if (tok === "CLOSEBRACKET"){
-                        eat();
-                        newLine();
-                    }else{
-                        error("Expected close bracket \"}\".");
-                    }
-                }else{
-                    error("Expected open bracket \"{\".");
-                }
-            
-                while (tok === "NEWLINE") {
-                    newLine();
-                }
-
-            }else{
-                error("Expected \"menuDef\".");
+            if (this.tok === "CLOSEBRACKET") {
+                this.eat();
+                this.newLine();
+            } else {
+                this.error("Expected close bracket \"}\".");
             }
         }
-
-        function scriptActions(){
-            if (tok === "CLOSE"){
-                eat();
-                IsString();
-            }
-            else if (tok === "CLOSEFORGAMETYPE"){
-                eat();
-                IsString();
-            }
-            else if(tok === "EXEC"){
-                eat();
-                IsString();
-            }
-    
-            else if (tok === "NEWLINE") {
-                eat();
-            }
-            else {
-                error("Unknown item keyword.");
-            }
-
-        }
-
-        function ItemStatement(){
-            //itemdef options
-
-            switch(tok){
-                case "NAME":
-                case "BACKGROUND":
-                case "FOCUSSOUND":
-                case "GROUP":
-                case "TEXT":
-                    eat();
-                    IsString();
-                    break;
-                case "RECT":
-                    eat();
-                    PrimaryExp();
-                    PrimaryExp();
-                    PrimaryExp();
-                    newLine();
-                    PrimaryExp(true);
-                    if (tok !== "NEWLINE") {
-                        PrimaryExp(true);
-                        if (tok !== "NEWLINE") {
-                            PrimaryExp();
-                        }
-                    }
-                    break;
-                case "ALIGN":
-                case "BORDER":
-                case "BORDERSIZE":
-                case "ELEMENTHEIGHT":
-                case "ELEMENTTYPE":
-                case "ELEMENTWIDTH":
-                case "FEEDER":
-                case "MAXCHARS":
-                case "MAXPAINTCHARS":
-                case "NOTSELECTABLE":
-                case "SPECIAL":
-                case "STYLE": 
-                case "TEXTALIGN":
-                case "TEXTALIGNX":
-                case "TEXTALIGNY":
-                case "TEXTFILE":
-                case "TEXTFONT":
-                case "TEXTSAVEGAME":
-                case "TEXTSCALE":
-                case "TEXTSTYLE":
-                case "TYPE":
-                case "VISIBLE":
-
-                    eat();
-                    PrimaryExp();
-                    break;
-                case "BACKCOLOR":
-                case "BORDERCOLOR":
-                case "FORECOLOR":
-                case "OUTLINECOLOR":
-                    eat();
-                    PrimaryExp();
-                    PrimaryExp();
-                    PrimaryExp();
-                    PrimaryExp();
-                    break;
-                case "MAXCHARSGOTONEXT":
-                    eat();
-                    newLine()
-                    break;
-                case "ORIGIN":
-                    eat();
-                    PrimaryExp();
-                    PrimaryExp();
-                    break;
-                case "AUTOWRAPPED":
-                case "DECORATION":
-                case "HORIZONTALSCROLL":
-                case "LEGACYSPLITSCREENSCALE":
-                    eat();
-                    newLine();
-                    break;
-                case "NEWLINE":
-                    eat();
-                    break;
-                default:
-                    error("Unknown item keyword.");
-                    break; 
-            }
-        }
-
-        function MenuStatement(){
-            //menu def options
-            switch(tok){
-                case "NAME":
-                case "BACKGROUND":
-                case "SOUNDLOOP":
-                    eat();
-                    IsString();
-                    break;
-                case "FULLSCREEN":
-                case "BLURWORLD":
-                case "VISIBLE":
-                case "STYLE":
-                case "BORDER":
-                case "BORDERSIZE":
-                case "DISABLECOLOR":
-                case "FADEAMOUNT":
-                case "FADECLAMP":
-                case "FACECYCLE":
-                case "FADEINAMOUNT":
-                case "FOCUSCOLOR":
-                case "OWNERDRAW":
-                case "VISIBLE":
-                case "FACECYCLE":
-                case "FACECYCLE":
-                    eat();
-                    PrimaryExp();
-                    break;
-                case "RECT":
-                    eat();
-                    PrimaryExp();
-                    PrimaryExp();
-                    PrimaryExp();
-                    newLine();
-                    PrimaryExp(true);
-                    if(tok !== "NEWLINE"){
-                        PrimaryExp(true);
-                        if(tok !== "NEWLINE"){
-                            PrimaryExp();
-                        }
-                    }
-                    break;
-                case "BORDERCOLOR":
-                case "BACKCOLOR":
-                case "FORECOLOR":
-                    eat();
-                    PrimaryExp();
-                    PrimaryExp();
-                    PrimaryExp();
-                    PrimaryExp();
-                    break;
-                case "OUTOFBOUNDSCLICK":
-                case "POPUP":
-                    eat();
-                    newLine();
-                    break;
-                case "NEWLINE":
-                    eat();
-                    break;
-                default:
-                    error("Unknown menu keyword.");
-                    break; 
-            }
-        }
-
-        function IsString(){
-            while (tok === "NEWLINE") {
-                newLine();
-            }
-            if(tok === "STRING"){
-                eat();
-            }
-            else if(tok ===  "FLOAT"){
-                eat();
-            }
-            else if(tok === "VAR"){
-                eat();
-            }
-            while (tok === "NEWLINE") {
-                newLine();
-            }
-        }
-
-        function PrimaryExp(ignore){
-            if(!ignore){
-                while (tok === "NEWLINE") {
-                    newLine();
-                }
-            }    
-            if (tok === "FLOAT"){
-                eat();
-            }
-            else if (tok === "OPENSMOOTHBRACKET"){
-                eat();
-                while (tok !== "CLOSEDSMOOTHBRACKET" && tok !== undefined){
-                    Exp();
-                }
-                if (tok === "CLOSEDSMOOTHBRACKET"){
-                    eat();
-                }
-                else{
-                    error("Expected closed smooth bracket \")\".");
-                }
-            }else{
-                error("Expected Float");
-            }
-        }
-
-        function Exp(){
-            while (tok === "NEWLINE") {
-                newLine();
-            }
-            PrimaryExp();
-            while (tok === "NEWLINE") {
-                newLine();
-            }
-            if (tok === "OPERATOR") {
-                eat();
-                Exp();
-            }
-        }
-
-        function eat(){
-            index++;
-            if(index > tokens.length-1){
-                tok = undefined;
-            }else{
-                tok = tokens[index].token;
-            }           
-        }
-
-        function newLine(){
-            if (tok === "NEWLINE"){
-                eat();
-            }
-        }
-
-        function error(err){
-            errors.push({
-                token: tokens[index],
-                error: err,
-            });
-            eat();
+        else {
+            this.error("Expected open bracket \"{\".");
         }
     }
 
-    return {
-        parse: parse,
-    };
+    MenuDef() {
+        if (this.tok === "MENUDEF") {
+            this.eat();
+            while (this.tok === "NEWLINE") {
+                this.newLine();
+            }
+            if (this.tok === "OPENBRACKET") {
+                this.eat();
+                this.newLine();
+
+                while (this.tok !== "CLOSEBRACKET" && this.tok !== undefined) {
+
+                    if (this.tok === "ITEMDEF") {
+                        this.eat();
+                        while (this.tok === "NEWLINE") {
+                            this.newLine();
+                        }
+                        if (this.tok === "OPENBRACKET") {
+                            this.eat();
+                            this.newLine();
+
+                            while (this.tok !== "CLOSEBRACKET" && this.tok !== undefined) {
+
+                                if (this.tok === "ACTION" || this.tok === "DOUBLECLICK" || this.tok === "FOCUSDVAR" || this.tok === "LEAVEFOCUS" || this.tok === "MOUSEENTER" || this.tok === "MOUSEENTERTEXT" || this.tok === "MOUSEEXIT" || this.tok === "MOUSEEXITTEXT" || this.tok === "ONFOCUS") {
+                                    this.eat();
+                                    while (this.tok === "NEWLINE") {
+                                        this.newLine();
+                                    }
+                                    if (this.tok === "OPENBRACKET") {
+                                        this.eat();
+                                        this.newLine();
+                                        while (this.tok !== "CLOSEBRACKET" && this.tok !== undefined) {
+                                            this.scriptActions();
+                                        }
+                                        if (this.tok === "CLOSEBRACKET") {
+                                            this.eat();
+                                            this.newLine();
+                                        } else {
+                                            this.error("Expected close bracket \"}\".");
+                                        }
+                                    } else {
+                                        this.error("Expected open bracket \"{\".");
+                                    }
+                                }
+                                else if (this.tok === "EXECKEY") {
+                                    this.eat();
+                                    while (this.tok === "NEWLINE") {
+                                        this.newLine();
+                                    }
+                                    this.IsString();
+                                    if (this.tok === "OPENBRACKET") {
+                                        this.eat();
+                                        this.newLine();
+                                        while (this.tok !== "CLOSEBRACKET" && this.tok !== undefined) {
+                                            this.scriptActions();
+                                        }
+                                        if (this.tok === "CLOSEBRACKET") {
+                                            this.eat();
+                                            this.newLine();
+                                        } else {
+                                            this.error("Expected close bracket \"}\".");
+                                        }
+                                    } else {
+                                        this.error("Expected open bracket \"{\".");
+                                    }
+
+                                }
+                                else if (this.tok === "EXECKEYINT") {
+                                    this.eat();
+                                    while (this.tok === "NEWLINE") {
+                                        this.newLine();
+                                    }
+                                    this.PrimaryExp();
+                                    if (this.tok === "OPENBRACKET") {
+                                        this.eat();
+                                        this.newLine();
+                                        while (this.tok !== "CLOSEBRACKET" && this.tok !== undefined) {
+                                            this.scriptActions();
+                                        }
+                                        if (this.tok === "CLOSEBRACKET") {
+                                            this.eat();
+                                            this.newLine();
+                                        } else {
+                                            this.error("Expected close bracket \"}\".");
+                                        }
+                                    } else {
+                                        this.error("Expected open bracket \"{\".");
+                                    }
+
+                                } else {
+                                    this.ItemStatement();
+                                }
+
+
+
+                            }
+                            if (this.tok === "CLOSEBRACKET") {
+                                this.eat();
+                                this.newLine();
+                            } else {
+                                this.error("Expected close bracket \"}\".");
+                            }
+
+                        } else {
+                            this.error("Expected open bracket \"{\".");
+                        }
+                    }
+                    else if (this.tok === "ONCLOSE" || this.tok === "ONESC" || this.tok === "ONOPEN") {
+                        this.eat();
+                        while (this.tok === "NEWLINE") {
+                            this.newLine();
+                        }
+                        if (this.tok === "OPENBRACKET") {
+                            this.eat();
+                            this.newLine();
+                            while (this.tok !== "CLOSEBRACKET" && this.tok !== undefined) {
+                                this.scriptActions();
+                            }
+                            if (this.tok === "CLOSEBRACKET") {
+                                this.eat();
+                                this.newLine();
+                            } else {
+                                this.error("Expected close bracket \"}\".");
+                            }
+                        } else {
+                            this.error("Expected open bracket \"{\".");
+                        }
+                    }
+                    else if (this.tok === "EXECKEY") {
+                        this.eat();
+                        while (this.tok === "NEWLINE") {
+                            this.newLine();
+                        }
+                        this.IsString();
+                        if (this.tok === "OPENBRACKET") {
+                            this.eat();
+                            this.newLine();
+                            while (this.tok !== "CLOSEBRACKET" && this.tok !== undefined) {
+                                this.scriptActions();
+                            }
+                            if (this.tok === "CLOSEBRACKET") {
+                                this.eat();
+                                this.newLine();
+                            } else {
+                                this.error("Expected close bracket \"}\".");
+                            }
+                        } else {
+                            this.error("Expected open bracket \"{\".");
+                        }
+
+                    }
+                    else if (this.tok === "EXECKEYINT") {
+                        this.eat();
+                        while (this.tok === "NEWLINE") {
+                            this.newLine();
+                        }
+                        this.PrimaryExp();
+                        if (this.tok === "OPENBRACKET") {
+                            this.eat();
+                            this.newLine();
+                            while (this.tok !== "CLOSEBRACKET" && this.tok !== undefined) {
+                                this.scriptActions();
+                            }
+                            if (this.tok === "CLOSEBRACKET") {
+                                this.eat();
+                                this.newLine();
+                            } else {
+                                this.error("Expected close bracket \"}\".");
+                            }
+                        } else {
+                            this.error("Expected open bracket \"{\".");
+                        }
+                    }
+                    else {
+                        this.MenuStatement();
+                    }
+
+                }
+
+                while (this.tok === "NEWLINE") {
+                    this.newLine();
+                }
+
+                if (this.tok === "CLOSEBRACKET") {
+                    this.eat();
+                    this.newLine();
+                } else {
+                    this.error("Expected close bracket \"}\".");
+                }
+            } else {
+                this.error("Expected open bracket \"{\".");
+            }
+
+            while (this.tok === "NEWLINE") {
+                this.newLine();
+            }
+
+        } else {
+            this.error("Expected \"menuDef\".");
+        }
+    }
+
+    scriptActions() {
+        if (this.tok === "CLOSE") {
+            this.eat();
+            this.IsString();
+        }
+        else if (this.tok === "CLOSEFORGAMETYPE") {
+            this.eat();
+            this.IsString();
+        }
+        else if (this.tok === "EXEC") {
+            this.eat();
+            this.IsString();
+        }
+
+        else if (this.tok === "NEWLINE") {
+            this.eat();
+        }
+        else {
+            this.error("Unknown item keyword.");
+        }
+    }
+
+    ItemStatement() {
+        //itemdef options
+
+        switch (this.tok) {
+            case "NAME":
+            case "BACKGROUND":
+            case "FOCUSSOUND":
+            case "GROUP":
+            case "TEXT":
+                this.eat();
+                this.IsString();
+                break;
+            case "RECT":
+                this.eat();
+                this.PrimaryExp();
+                this.PrimaryExp();
+                this.PrimaryExp();
+                this.newLine();
+                this.PrimaryExp(true);
+                if (this.tok !== "NEWLINE") {
+                    this.PrimaryExp(true);
+                    if (this.tok !== "NEWLINE") {
+                        this.PrimaryExp();
+                    }
+                }
+                break;
+            case "ALIGN":
+            case "BORDER":
+            case "BORDERSIZE":
+            case "ELEMENTHEIGHT":
+            case "ELEMENTTYPE":
+            case "ELEMENTWIDTH":
+            case "FEEDER":
+            case "MAXCHARS":
+            case "MAXPAINTCHARS":
+            case "NOTSELECTABLE":
+            case "SPECIAL":
+            case "STYLE":
+            case "TEXTALIGN":
+            case "TEXTALIGNX":
+            case "TEXTALIGNY":
+            case "TEXTFILE":
+            case "TEXTFONT":
+            case "TEXTSAVEGAME":
+            case "TEXTSCALE":
+            case "TEXTSTYLE":
+            case "TYPE":
+            case "VISIBLE":
+
+                this.eat();
+                this.PrimaryExp();
+                break;
+            case "BACKCOLOR":
+            case "BORDERCOLOR":
+            case "FORECOLOR":
+            case "OUTLINECOLOR":
+                this.eat();
+                this.PrimaryExp();
+                this.PrimaryExp();
+                this.PrimaryExp();
+                this.PrimaryExp();
+                break;
+            case "MAXCHARSGOTONEXT":
+                this.eat();
+                newLine()
+                break;
+            case "ORIGIN":
+                this.eat();
+                this.PrimaryExp();
+                this.PrimaryExp();
+                break;
+            case "AUTOWRAPPED":
+            case "DECORATION":
+            case "HORIZONTALSCROLL":
+            case "LEGACYSPLITSCREENSCALE":
+                this.eat();
+                this.newLine();
+                break;
+            case "NEWLINE":
+                this.eat();
+                break;
+            default:
+                this.error("Unknown item keyword.");
+                break;
+        }
+    }
+
+    MenuStatement() {
+        //menu def options
+        switch (this.tok) {
+            case "NAME":
+            case "BACKGROUND":
+            case "SOUNDLOOP":
+                this.eat();
+                this.IsString();
+                break;
+            case "FULLSCREEN":
+            case "BLURWORLD":
+            case "VISIBLE":
+            case "STYLE":
+            case "BORDER":
+            case "BORDERSIZE":
+            case "DISABLECOLOR":
+            case "FADEAMOUNT":
+            case "FADECLAMP":
+            case "FACECYCLE":
+            case "FADEINAMOUNT":
+            case "FOCUSCOLOR":
+            case "OWNERDRAW":
+            case "VISIBLE":
+            case "FACECYCLE":
+            case "FACECYCLE":
+                this.eat();
+                this.PrimaryExp();
+                break;
+            case "RECT":
+                this.eat();
+                this.PrimaryExp();
+                this.PrimaryExp();
+                this.PrimaryExp();
+                this.newLine();
+                this.PrimaryExp(true);
+                if (this.tok !== "NEWLINE") {
+                    this.PrimaryExp(true);
+                    if (this.tok !== "NEWLINE") {
+                        this.PrimaryExp();
+                    }
+                }
+                break;
+            case "BORDERCOLOR":
+            case "BACKCOLOR":
+            case "FORECOLOR":
+                this.eat();
+                this.PrimaryExp();
+                this.PrimaryExp();
+                this.PrimaryExp();
+                this.PrimaryExp();
+                break;
+            case "OUTOFBOUNDSCLICK":
+            case "POPUP":
+                this.eat();
+                this.newLine();
+                break;
+            case "NEWLINE":
+                this.eat();
+                break;
+            default:
+                this.error("Unknown menu keyword.");
+                break;
+        }
+    }
+
+    IsString() {
+        while (this.tok === "NEWLINE") {
+            this.newLine();
+        }
+        if (this.tok === "STRING") {
+            this.eat();
+        }
+        else if (this.tok === "FLOAT") {
+            this.eat();
+        }
+        else if (this.tok === "VAR") {
+            this.eat();
+        }
+        while (this.tok === "NEWLINE") {
+            this.newLine();
+        }
+    }
+
+    PrimaryExp(ignore) {
+        if (!ignore) {
+            while (this.tok === "NEWLINE") {
+                this.newLine();
+            }
+        }
+        if (this.tok === "FLOAT") {
+            this.eat();
+        }
+        else if (this.tok === "OPENSMOOTHBRACKET") {
+            this.eat();
+            while (this.tok !== "CLOSEDSMOOTHBRACKET" && this.tok !== undefined) {
+                this.Exp();
+            }
+            if (this.tok === "CLOSEDSMOOTHBRACKET") {
+                this.eat();
+            }
+            else {
+                this.error("Expected closed smooth bracket \")\".");
+            }
+        } else {
+            this.error("Expected Float");
+        }
+    }
+
+    Exp() {
+        while (this.tok === "NEWLINE") {
+            this.newLine();
+        }
+        this.PrimaryExp();
+        while (this.tok === "NEWLINE") {
+            this.newLine();
+        }
+        if (this.tok === "OPERATOR") {
+            this.eat();
+            this.Exp();
+        }
+    }
+
+    newLine() {
+        if (this.tok === "NEWLINE") {
+            this.eat();
+        }
+    }
+
+    eat() {
+        this.index++;
+        if (this.index > this.tokens.length - 1) {
+            this.tok = undefined;
+        } else {
+            this.tok = this.tokens[this.index].token;
+        }
+    }
+
+    error(err) {
+        this.errors.push({
+            token: this.tokens[this.index],
+            error: err,
+        });
+        this.eat();
+    }
 }
+

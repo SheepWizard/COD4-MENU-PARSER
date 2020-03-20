@@ -1,7 +1,9 @@
-
+import Parser from "./parser.js";
+import Lexer from "./lexer.js";
 import PreProcessor from "./preprocessor.js";
 
-
+const parser = new Parser();
+const lexer = new Lexer();
 
 function init(){
     eventListeners();
@@ -15,15 +17,12 @@ function fileReader(event){
     let reader = new FileReader();
     const file = event.target.files[0];
     reader.onload = () => {
-        const preProccessor = new PreProcessor(reader.result.trim());
-        preProccessor.run();
-        // const preProcessor = PreProcessor(reader.result.trim());
-        // console.log(preProcessor.process());
-        //  const lexer = Lexer(reader.result);
-        //  const tokens = lexer.getTokens();
-        //  console.log(tokens);
-        //  const parser = Parser(tokens);
-        //  console.log("Errors:", parser.parse());
+        // const preProccessor = new PreProcessor(reader.result.trim());
+        // preProccessor.run();
+
+        lexer.setFile(reader.result);
+        parser.setTokens(lexer.getTokens());
+        console.log(parser.parse());
     }
     reader.onerror = () =>{
         alert("Error reading file");

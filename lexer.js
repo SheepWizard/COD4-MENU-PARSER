@@ -190,7 +190,7 @@ function makeTokens() {
     //createToken("ENABLEDVAR", /enableDvar/);
     createToken("FADEAMOUNT", /fadeamount/);//menudef
     createToken("FADECLAMP", /fadeclamp/);//menudef
-    createToken("FACECYCLE", /facecycle/);//menudef
+    createToken("FADECYCLE", /fadecycle/);//menudef
     createToken("FADEINAMOUNT", /fadeinamount/);//menudef
     createToken("FEEDER", /feeder/);//itemdef
     createToken("FOCUSCOLOR", /focuscolor/);//meudef

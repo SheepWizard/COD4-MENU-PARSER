@@ -15,17 +15,15 @@ MenuStatement   -> name String
                 -> bordercolor PrimaryExp PrimaryExp PrimaryExp PrimaryExp
                 -> backcolor PrimaryExp PrimaryExp PrimaryExp PrimaryExp
                 -> forecolor PrimaryExp PrimaryExp PrimaryExp PrimaryExp
-                -> disablecolor PrimaryExp
                 -> background String
                 -> disablecolor PrimaryExp PrimaryExp PrimaryExp PrimaryExp
                 -> fadeamount PrimaryExp    
                 -> fadeClamp PrimaryExp
-                -> faceCycle PrimaryExp
+                -> fadeCycle PrimaryExp
                 -> fadeInAmount PrimaryExp
                 -> focuscolor PrimaryExp PrimaryExp PrimaryExp PrimaryExp
                 -> ownerdraw PrimaryExp
                 -> soundloop PrimaryExp
-                -> visible PrimaryExp
                 -> outOfBoundsClick
                 -> popup
                 -> legacySplitScreenScale

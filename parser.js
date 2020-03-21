@@ -371,16 +371,12 @@ export default class Parser{
             case "STYLE":
             case "BORDER":
             case "BORDERSIZE":
-            case "DISABLECOLOR":
             case "FADEAMOUNT":
             case "FADECLAMP":
-            case "FACECYCLE":
+            case "FADECYCLE":
             case "FADEINAMOUNT":
             case "FOCUSCOLOR":
             case "OWNERDRAW":
-            case "VISIBLE":
-            case "FACECYCLE":
-            case "FACECYCLE":
                 this.eat();
                 this.PrimaryExp();
                 break;
@@ -400,6 +396,7 @@ export default class Parser{
                 break;
             case "BORDERCOLOR":
             case "BACKCOLOR":
+            case "DISABLECOLOR":
             case "FORECOLOR":
                 this.eat();
                 this.PrimaryExp();

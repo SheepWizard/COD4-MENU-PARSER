@@ -1,12 +1,19 @@
 import Parser from "./parser.js";
 import Lexer from "./lexer.js";
 import PreProcessor from "./preprocessor.js";
+import {canvas} from "./modules/MyCanvas.js";
+
+
 
 const parser = new Parser();
 const lexer = new Lexer();
 
 function init(){
     eventListeners();
+    canvas.setCanvas(document.getElementById("canvas"));
+    canvas.setScreen(document.getElementById("screencanvas"));
+    canvas.setScreenResolution(0);
+    canvas.draw();
 }
 
 function eventListeners(){

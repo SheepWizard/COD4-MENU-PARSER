@@ -12,8 +12,8 @@ function init(){
     eventListeners();
     canvas.setCanvas(document.getElementById("canvas"));
     canvas.setScreen(document.getElementById("screencanvas"));
-    canvas.setScreenResolution(0);
-    canvas.draw();
+    canvas.setScreenResolution(1);
+    
 }
 
 function eventListeners(){
@@ -29,7 +29,10 @@ function fileReader(event){
 
         lexer.setFile(reader.result);
         parser.setTokens(lexer.getTokens());
-        console.log(parser.parse());
+        console.log(`Parse errors: ${parser.getErrors()}`);
+        const menu = parser.parse();
+        canvas.setMenu(menu);
+        canvas.draw();
     }
     reader.onerror = () =>{
         alert("Error reading file");

@@ -150,7 +150,6 @@ export default class Lexer{
     }
 
     getTokens(){
-        this.tokenList = [];
         this.inputStream();
         return this.tokenList;
     }

@@ -1,44 +1,41 @@
 { 
-    menuDef 
+    MenUdef 
     {
-        name "hello"
+        name "mewdsd dsds"
         background "123"
-        fullscreen 1
+        soundloop "song1"
+        fullscreen 0
         blurworld 1
-        bordersize 1.42
-        bordercolor 1 1 0.23 0.12
-        rect 1 1 1 1 1
-        execKeyInt 1 {
-
-        } 
-
-        onClose{
-            close "hello"
-            close self
-        }
-        onOpen{
-
-        }
-        onEsc{
-
-        }
+        bordersize 15
+        border 2
+        rect 0 0 640 480 1 0
+        bordercolor 1 0 1 1
+        visible 1
+       
 
         itemDef{
-            name "hello"
-            action{
-                close self
-            }
-            doubleclick{
-
-            }
+            name "hello"     
             rect 1 1 1 1
-            execKeyInt 1 {
-
-            } 
             bordercolor 1 1 0.23 1
             decoration
             
         }
 
+        itemdef{
+            name "def1"
+            rect 20 20 400 400 1 2
+            border 1
+            bordercolor 1 0 0.25 1
+            bordersize 5
+            origin 20 30
+            focussound "click"
+            decoration
+        }
+
+    }
+
+    MenuDef{
+        name "cat"
+        rect 10 10 54 234
     }
 }

@@ -49,12 +49,11 @@ ItemStatement   -> name String
                 -> elementheight PrimaryExp
                 -> elementwidth PrimaryExp
                 -> elementtype PrimaryExp
-                -> feeder PrimaryExp
+                -> feeder String
                 -> forecolor PrimaryExp PrimaryExp PrimaryExp PrimaryExp
                 -> focusSound String
                 -> group String
                 -> maxchars PrimaryExp
-                -> maxCharsGotoNext
                 -> maxpaintchars PrimaryExp
                 -> notselectable PrimaryExp
                 -> origin PrimaryExp PrimaryExp
@@ -76,6 +75,7 @@ ItemStatement   -> name String
                 -> autowrapped
                 -> decoration
                 -> horizontalscroll
+                -> maxCharsGotoNext
                 
                 -> action { scriptAction* }
                 -> doubleclick { scriptAction* }

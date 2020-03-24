@@ -1,7 +1,10 @@
+'use strict';
+
 import {convertColour} from "./Utility.js";
 
 class MenuCanvas{
     constructor(){
+        this.menu;
         this.menuCanvas;
         this.menuCtx;
         this.screenCanvas;
@@ -9,14 +12,18 @@ class MenuCanvas{
         this.mousePosition = {
             x: 0,
             y: 0,
-        }
+        };
         this.mouseClicked = false;
         this.mouseEnter = false;
-        this.zoomScale = 1.2;
+        this.zoomScale = 1;
         this.screenSize = {
             x: 640,
             y: 480,
         };
+    }
+
+    setMenu(m){
+        this.menu = m;
     }
     
     //set canvas for drawing menu
@@ -26,7 +33,7 @@ class MenuCanvas{
         this.setFillStyle(1,0,0,1);
         this.menuCanvas.width = 200;
         this.menuCanvas.height = 200;
-        this.menuCanvas.style.borderWidth = "0px";
+        //this.menuCanvas.style.b = "0px";
         this.menuCanvas.addEventListener("mousemove", this._mouseMove.bind(this));
         this.menuCanvas.addEventListener("mousedown", this._mouseDown.bind(this));
         this.menuCanvas.addEventListener("mouseup", this._mouseUp.bind(this));
@@ -34,6 +41,7 @@ class MenuCanvas{
         this.menuCanvas.addEventListener("mouseleave", this._mouseLeave.bind(this));
         this.menuCanvas.addEventListener("keydown", this._keyDown.bind(this));
         this.menuCanvas.addEventListener("keyup", this._keyUp.bind(this));
+        this.getMenuCtx.bind(this);
     }
 
     //set canvas for background screen
@@ -78,9 +86,14 @@ class MenuCanvas{
         this.screenCanvas.width = this.applyZoom(this.screenSize.x);
         this.screenCanvas.height = this.applyZoom(this.screenSize.y);
 
+        //update menu size
+        this.menuCanvas.width = this.applyZoom(this.screenSize.x);
+        this.menuCanvas.height = this.applyZoom(this.screenSize.y);
+
         //clear canvas to draw again
         this.menuCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-        this.menuCtx.fillRect(20, 20, 150, 100);
+        this.menu.menuDefList[0].draw();
+   
         
     }
     //Set fill style for canvas ctx
@@ -91,9 +104,9 @@ class MenuCanvas{
     //Set canvas visiable or not
     setVisible(bool){
         if(bool){
-            this.menuCanvas.style.display = "none";
-        }else{
             this.menuCanvas.style.display = "block";
+        }else{
+            this.menuCanvas.style.display = "none";
         }
     }
 
@@ -131,8 +144,8 @@ class MenuCanvas{
 
     _updateMousePositon(event){
         this.mousePosition = {
-            x: event.clientX - this.canvas.getBoundingClientRect().left,
-            y: event.clientY - this.canvas.getBoundingClientRect().top,
+            x: event.clientX - this.menuCanvas.getBoundingClientRect().left,
+            y: event.clientY - this.menuCanvas.getBoundingClientRect().top,
         }
     }
 }

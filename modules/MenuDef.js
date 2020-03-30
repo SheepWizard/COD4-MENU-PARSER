@@ -35,45 +35,47 @@ export default class MenuDef extends Def {
                 b: 0,
                 a: 0,
             },
-            BACKCOLOR: {
+            BACKCOLOR: {//does not effect menudef
                 r: 0,
                 g: 0,
                 b: 0,
                 a: 0,
             },
-            FORECOLOR: {
+            FORECOLOR: {//does not effect menudef
                 r: 0,
                 g: 0,
                 b: 0,
                 a: 0,
             },
-            DISABLECOLOR: {
+            DISABLECOLOR: {//doesnt effect menudef
                 r: 0,
                 g: 0,
                 b: 0,
                 a: 0,
             },
-            FADEAMOUNT: 0,
-            FADECLAMP: 0,
-            FADECYCLE: 0,
-            FADEINAMOUNT: 0,
-            FOCUSCOLOR: {
+            FADEAMOUNT: 0,//does not effect menudef
+            FADECLAMP: 0,//does not effect menudef
+            FADECYCLE: 0,//does not effect menudef
+            FADEINAMOUNT: 0,//does not effect menudef
+            FOCUSCOLOR: {//does not effect menudef
                 r: 0,
                 g: 0,
                 b: 0,
                 a: 0,
             },
-            OWNERDRAW: 0,
+            OWNERDRAW: 0,//does not effect menudef
             SOUNDLOOP: "",
             OUTOFBOUNDSCLICK: 0,
-            POPUP: 0,
+            POPUP: 0,//cant be shown in browser
             LEGACYSPLITSCREENSCALE: 0,
         };
     }
 
     addItemDef() {
         this.activeItemDef = this.itemDefList.length;
-        this.itemDefList.push(new ItemDef());
+        const itemDef = new ItemDef();
+        itemDef.parent = this;
+        this.itemDefList.push(itemDef);
     }
 
     getActiveItemDef() {
@@ -93,34 +95,39 @@ export default class MenuDef extends Def {
         //check blur
         canvas.setScreenBlur(this.properties.BLURWORLD);
 
-
-
-        canvas.setFillStyle(255, 0, 0, 1);
-
-        //HORIZONTAL_ALIGN_SUBLEFT left edge of a 4:3 screen (safe area not included)
-        if (this.properties.RECT.hAlign === 0) {
-            this.offset.x = ((canvas.screenSize.x - 640) / 2);
+        if(this.properties.RECT.w < 0){
+            console.log("Menu will not display properly with negative width");
         }
-        //HORIZONTAL_ALIGN_LEFT left viewable (safe area) edge
-        else if (this.properties.RECT.hAlign === 1) {
-            this.offset.x = 0;
-        }
-        //HORIZONTAL_ALIGN_CENTER center of the screen (reticle)
-        else if (this.properties.RECT.hAlign === 2) {
-            this.offset.x = (canvas.screenSize.x / 2);
-        }
-        //HORIZONTAL_ALIGN_RIGHT right viewable (safe area) edge
-        else if (this.properties.RECT.hAlign === 3) {
-            this.offset.x = canvas.screenSize.x;
+        if (this.properties.RECT.h < 0) {
+            console.log("Menu will not display properly with negative height");
         }
 
+        this.offset = this.calculateOffset(this.properties.RECT);
 
-
-
+        //play sound
+        
         //canvas.getMenuCtx().fillRect(canvas.applyZoom(this.offset.x + this.properties.RECT.x), canvas.applyZoom(this.offset.y + this.properties.RECT.y), canvas.applyZoom(this.properties.RECT.w), canvas.applyZoom(this.properties.RECT.h));
         this.drawBorders(canvas.applyZoom(this.offset.x + this.properties.RECT.x), canvas.applyZoom(this.offset.y + this.properties.RECT.y), canvas.applyZoom(this.properties.RECT.w), canvas.applyZoom(this.properties.RECT.h));
 
 
+        for(let i = 0; i<this.itemDefList.length; i++){
+            this.itemDefList[i].draw();
+        }
+
+    }
+
+    getPosition(){
+        return{
+            x: this.properties.RECT.x,
+            y: this.properties.RECT.y,
+        };
+    }
+
+    getOffset(){
+        return {
+            x: this.offset.x,
+            y: this.offset.y,
+        };
     }
 
     onOpen() {

@@ -41,7 +41,6 @@ class MenuCanvas{
         this.menuCanvas.addEventListener("mouseleave", this._mouseLeave.bind(this));
         this.menuCanvas.addEventListener("keydown", this._keyDown.bind(this));
         this.menuCanvas.addEventListener("keyup", this._keyUp.bind(this));
-        this.getMenuCtx.bind(this);
     }
 
     //set canvas for background screen

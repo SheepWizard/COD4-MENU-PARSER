@@ -11,6 +11,61 @@ export default class Def {
 
     }
 
+    calculateOffset(rect){
+        const offset = {
+            x: 0,
+            y: 0,
+        };
+        switch (rect.hAlign) {
+            case 0://HORIZONTAL_ALIGN_SUBLEFT left edge of a 4:3 screen (safe area not included)
+                offset.x = (canvas.screenSize.x - 640) / 2;
+                break;
+            case 1://HORIZONTAL_ALIGN_LEFT left viewable (safe area) edge
+                offset.x = 0;
+                break;
+            case 2://HORIZONTAL_ALIGN_CENTER center of the screen (reticle)
+                offset.x = canvas.screenSize.x / 2;
+                break;
+            case 3://HORIZONTAL_ALIGN_RIGHT right viewable (safe area) edge
+                offset.x = canvas.screenSize.x;
+                break;
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+                offset.x = 0;
+                console.log("Alignments 4-7 are not supported");
+                break;
+            default:
+                console.log("Alignment not recognised");
+        }
+
+        switch (rect.vAlign) {
+            case 0://VERTICAL_ALIGN_SUBTOP top edge of the 4:3 screen (safe area not included)
+                offset.y = (canvas.screenSize.y - 480) / 2;
+                break;
+            case 1://VERTICAL_ALIGN_TOP top viewable (safe area) edge
+                offset.y = 0;
+                break;
+            case 2://VERTICAL_ALIGN_CENTER center of the screen (reticle)
+                offset.y = canvas.screenSize.y / 2;
+                break;
+            case 3://HORIZONTAL_ALIGN_RIGHT right viewable (safe area) edge
+                offset.y = canvas.screenSize.y;
+                break;
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+                offset.y = 0;
+                console.log("Alignments 4-7 are not supported");
+                break;
+            default:
+                console.log("Alignment not recognised");
+        }
+        return offset;
+    }
+
     drawBorders(x, y, width, height) {
         switch (this.properties.BORDER) {
             //full

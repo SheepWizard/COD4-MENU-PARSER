@@ -5,6 +5,11 @@ import {canvas} from "./MyCanvas.js";
 export default class ItemDef extends Def {
     constructor() {
         super();
+        this.parent;
+        this.offset = {
+            x: 0,
+            y: 0,
+        };
         this.properties = {
             NAME: "",
             RECT: {
@@ -77,6 +82,47 @@ export default class ItemDef extends Def {
     }
 
     draw() {
+
+        if(this.properties.VISIBLE === 0){
+            return;
+        }
+
+        if(this.properties.RECT.w < 0){
+            console.log(`Itemdef width can not be less then 0 (${this.properties.NAME})`);
+            return;
+        }
+        if (this.properties.RECT.h < 0) {
+            console.log(`Itemdef height can not be less then 0 (${this.properties.NAME})`);
+            return;
+        }
+
+        this.offset = this.calculateOffset(this.properties.RECT);
+        this.menuPositon = this.parent.getPosition();
+        this.menuOffset = this.parent.getOffset();
+
+        let x = 0;
+        //if halign = 0 then we use the offset for menudef
+        if(this.properties.RECT.hAlign === 0){
+            x = this.menuPositon.x + this.menuOffset.x + this.properties.RECT.x + this.parent.properties.BORDERSIZE;
+        }else{
+            x = this.menuPositon.x + this.offset.x + this.properties.RECT.x + this.parent.properties.BORDERSIZE;
+        }
+        let y = 0;
+        if(this.properties.RECT.vAlign === 0){
+            y = this.menuPositon.y + this.menuOffset.y + this.properties.RECT.y + this.parent.properties.BORDERSIZE;
+        }else{
+            y = this.menuPositon.y + this.offset.y + this.properties.RECT.y + this.parent.properties.BORDERSIZE;
+        }
+
+        const ctx = canvas.getMenuCtx();
+
+        if (this.properties.STYLE === 1) {// filled with background color
+            canvas.setFillStyle(255, 0, 0, 1);
+           // ctx.fillRect(0,0,100,100);
+            ctx.fillRect(canvas.applyZoom(x), canvas.applyZoom(y), canvas.applyZoom(this.properties.RECT.w), canvas.applyZoom(this.properties.RECT.h));
+            //ctx.fillRect(x,y,this.properties.RECT.w,this.properties.RECT.h)
+        }
+
 
     }
 }

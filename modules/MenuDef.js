@@ -2,6 +2,7 @@
 import Def from "./Def.js";
 import ItemDef from "./ItemDef.js";
 import { canvas } from "./MyCanvas.js";
+import Terminal from "./Terminal.js";
 
 export default class MenuDef extends Def {
     constructor() {
@@ -96,10 +97,10 @@ export default class MenuDef extends Def {
         canvas.setScreenBlur(this.properties.BLURWORLD);
 
         if(this.properties.RECT.w < 0){
-            console.log("Menu will not display properly with negative width");
+            Terminal.printText("Menu will not display properly with negative width", {r:255,g:0,b:255});
         }
         if (this.properties.RECT.h < 0) {
-            console.log("Menu will not display properly with negative height");
+            Terminal.printText("Menu will not display properly with negative height", { r: 255, g: 0, b: 255 });
         }
 
         this.offset = this.calculateOffset(this.properties.RECT);

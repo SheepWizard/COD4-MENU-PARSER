@@ -1,4 +1,5 @@
 import {Menu} from "./modules/Menu.js";
+import Terminal from "./modules/Terminal.js";
 
 "use strict";
 
@@ -572,10 +573,10 @@ export default class Parser{
     }
 
     error(err) {
-        this.errors.push({
-            token: this.tokens[this.index],
-            error: err,
-        });
+        Terminal.printText(`${err} on line ${this.tokens[this.index].line}`,{r:255,g:0,b:0});
+        this.errors.push(
+            `${err} instead found ${this.tokens[this.index].input} on line ${this.tokens[this.index].line}`
+        );
         this.eat();
     }
 

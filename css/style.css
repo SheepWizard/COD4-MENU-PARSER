@@ -1,10 +1,94 @@
+body{
+    padding: 0px;
+    margin:0px;
+}
+
 .canvas{
-    margin-left: 25%;
-    margin-top: 5%;
+
     padding: 0px;
     /*remove border, just here for visual aid */
     border-style: solid;
     border-width: 2px;
     border-color: #111;
     position: absolute;
+}
+
+.options{
+    position: fixed;
+    left: 30%;
+    bottom: 0;
+    width: 30%;
+    height: 200px;
+    background-color: black;
+    border-top: 5px solid rgb(121, 121, 121) ;
+    border-left:5px solid rgb(121, 121, 121) ;
+    overflow: scroll;
+    overflow-x:hidden;
+    margin: 0px;
+}
+
+.options table{
+    color: white;
+    width: 100%;
+}
+
+.terminal{
+    position: fixed;
+    
+    left: 0;
+    bottom: 0;
+    width: 30%;
+    height: 200px;
+    background-color: black;
+    border-top: 5px solid rgb(121, 121, 121) ;
+    border-left:5px solid rgb(121, 121, 121) ;
+    overflow: scroll;
+    overflow-x:hidden;
+    padding-left: 0px;
+    margin: 0px;
+}
+
+.terminal ol{
+    color: white;
+    counter-reset: lineCount;
+    list-style: none;
+    padding-left: 10px;
+}
+
+.terminal li{
+    counter-increment: lineCount;
+}
+
+.terminal li:before{
+    content: counter(lineCount) ": ";
+    color: aliceblue;
+    margin-right: 5px;
+}
+
+.terminal.resize-top{
+    height: 5px;
+    position: sticky;
+    width: 100%;
+    top: 0px;
+    border: 0px;
+    cursor: nesw-resize;
+}
+
+.textSideBar{
+    height:100%;
+    width: 40%;
+    padding: 0px;
+    margin: 0px;
+    float: right;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    overflow-x: hidden;
+    background-color: #111;
+}
+
+#editor {
+    position: absolute;
+    width: 100%;
+    height: 100%;
 }

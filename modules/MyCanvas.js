@@ -72,6 +72,16 @@ class MenuCanvas{
      */
     setScreenResolution(res){
         this.screenSize.x = res == 0 ? 640 : res == 1 ? 720 : res == 2 ? 852 : 640;
+        this.draw();
+    }
+
+    /**
+     * Set zoom value for canvases
+     * @param {float} z zoom value
+     */
+    setZoomValue(z){
+        this.zoomScale = z;
+        this.draw();
     }
 
     //add zoom to values
@@ -91,7 +101,10 @@ class MenuCanvas{
 
         //clear canvas to draw again
         this.menuCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-        this.menu.menuDefList[0].draw();
+        if(this.menu){
+            this.menu.menuDefList[0].draw();
+        }
+        
    
         
     }

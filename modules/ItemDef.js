@@ -1,6 +1,7 @@
 'use strict';
 import Def from "./Def.js";
 import {canvas} from "./MyCanvas.js";
+import Terminal from "./Terminal.js";
 
 export default class ItemDef extends Def {
     constructor() {
@@ -88,11 +89,11 @@ export default class ItemDef extends Def {
         }
 
         if(this.properties.RECT.w < 0){
-            console.log(`Itemdef width can not be less then 0 (${this.properties.NAME})`);
+            Terminal.printText(`Itemdef width can not be less then 0 (${this.properties.NAME})`, { r: 255, g: 0, b: 255 });
             return;
         }
         if (this.properties.RECT.h < 0) {
-            console.log(`Itemdef height can not be less then 0 (${this.properties.NAME})`);
+            Terminal.printText(`Itemdef height can not be less then 0 (${this.properties.NAME})`, { r: 255, g: 0, b: 255 });
             return;
         }
 

@@ -1,4 +1,4 @@
-#Call of Duy 4 Menu Parser
+# Call of Duy 4 Menu Parser
 
 This website will parse menu files for Call of Duty 4, giving errors and warning similar to COD4 linker.
 
@@ -8,5 +8,5 @@ The website will also display the menu you have parsed. This is currently still 
 
 To use the website write your menu in the text editor and press the 'Run' button. Alternativly you can upload a menu file. Any errors will be displayed in the terminal. You can also zoom and change aspect ratio of the menu preview.
 
-##Preview the website here:
-####https://sheepwizard.github.io/COD4-MENU-PARSER
+## Preview the website here:
+#### https://sheepwizard.github.io/COD4-MENU-PARSER

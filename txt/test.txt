@@ -8,14 +8,22 @@
         blurworld 1
         bordersize 2
         border 1
-        rect (0-100) 50 640 480 0 0
+        rect 0 0 640 480 0 0
         bordercolor 1 0 1 1
         visible 1
        
 
         itemDef{
             name "hello"     
-            rect 0 0 100 100 3 0
+            rect 0 0 100 100 0 0
+            visible (1)
+            style 1
+            
+        }
+
+        itemDef{
+            name "hello"     
+            rect 200 0 100 300 0 0
             visible 1
             style 1
             

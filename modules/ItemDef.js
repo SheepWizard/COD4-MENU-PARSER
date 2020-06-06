@@ -49,9 +49,19 @@ export default class ItemDef extends Def {
             },
             FOCUSSOUND: "",
             GROUP: "",
+            ALLOWBINDING: "",
+            SELECTICON: "",
+            DVAR: "",
+            DVARTEST: "",
             MAXCHARS: 10000,
             MAXPAINTCHARS: 10000,
             NOTSELECTABLE: 0,
+            SELECTBORDER:{
+                r: 0,
+                g: 0,
+                b: 0,
+                a: 0,
+            },
             ORIGIN: {
                 x: 0,
                 y: 0,
@@ -79,6 +89,7 @@ export default class ItemDef extends Def {
             DECORATION: 0,
             HORIZONTALSCROLL: 0,
             MAXCHARSGOTONEXT: 0,
+            USEPAGING: 0,
         }
     }
 
@@ -104,24 +115,67 @@ export default class ItemDef extends Def {
         let x = 0;
         //if halign = 0 then we use the offset for menudef
         if(this.properties.RECT.hAlign === 0){
-            x = this.menuPositon.x + this.menuOffset.x + this.properties.RECT.x + this.parent.properties.BORDERSIZE;
+            //if we have a border, apply border size of both menudef and itemdef to origin
+            if(this.parent.properties.BORDER !== 0){
+                x = this.menuPositon.x + this.menuOffset.x + this.properties.RECT.x + this.parent.properties.BORDERSIZE + this.properties.BORDERSIZE;
+            }else{
+                x = this.menuPositon.x + this.menuOffset.x + this.properties.RECT.x;
+            }
+            
         }else{
-            x = this.menuPositon.x + this.offset.x + this.properties.RECT.x + this.parent.properties.BORDERSIZE;
+            if (this.parent.properties.BORDER !== 0) {
+                x = this.menuPositon.x + this.offset.x + this.properties.RECT.x + this.parent.properties.BORDERSIZE + this.properties.BORDERSIZE;
+            }else{
+                x = this.menuPositon.x + this.offset.x + this.properties.RECT.x;
+            }
         }
+        x += this.properties.ORIGIN.x;
         let y = 0;
         if(this.properties.RECT.vAlign === 0){
-            y = this.menuPositon.y + this.menuOffset.y + this.properties.RECT.y + this.parent.properties.BORDERSIZE;
+            if (this.parent.properties.BORDER !== 0) {
+                y = this.menuPositon.y + this.menuOffset.y + this.properties.RECT.y + this.parent.properties.BORDERSIZE + this.properties.BORDERSIZE;
+            }else{
+                y = this.menuPositon.y + this.menuOffset.y + this.properties.RECT.y;
+            }
         }else{
-            y = this.menuPositon.y + this.offset.y + this.properties.RECT.y + this.parent.properties.BORDERSIZE;
+            if (this.parent.properties.BORDER !== 0) {
+                y = this.menuPositon.y + this.offset.y + this.properties.RECT.y + this.parent.properties.BORDERSIZE + this.properties.BORDERSIZE;
+            }else{
+                y = this.menuPositon.y + this.offset.y + this.properties.RECT.y;
+            }
         }
+        y += this.properties.ORIGIN.y;
 
         const ctx = canvas.getMenuCtx();
 
+        //draw rect
         if (this.properties.STYLE === 1) {// filled with background color
-            canvas.setFillStyle(255, 0, 0, 1);
-           // ctx.fillRect(0,0,100,100);
-            ctx.fillRect(canvas.applyZoom(x), canvas.applyZoom(y), canvas.applyZoom(this.properties.RECT.w), canvas.applyZoom(this.properties.RECT.h));
-            //ctx.fillRect(x,y,this.properties.RECT.w,this.properties.RECT.h)
+            canvas.setFillStyle(this.properties.BACKCOLOR.r, this.properties.BACKCOLOR.g, this.properties.BACKCOLOR.b, this.properties.BACKCOLOR.a);
+
+            //if we have background, draw background image with backcolour filter as overlay
+            //if background but no backcolor, draw black
+
+            //if we have a border make size smaller
+            if(this.properties.BORDER !== 0){
+                ctx.fillRect(canvas.applyZoom(x), canvas.applyZoom(y), canvas.applyZoom(this.properties.RECT.w - this.properties.BORDERSIZE), canvas.applyZoom(this.properties.RECT.h - this.properties.BORDERSIZE));
+            }else{
+                ctx.fillRect(canvas.applyZoom(x), canvas.applyZoom(y), canvas.applyZoom(this.properties.RECT.w), canvas.applyZoom(this.properties.RECT.h));
+            }
+        }else if(this.properties.STYLE === 2){
+            Terminal.printText("Style 2 (gradiant) does not work on Cod4", { r: 255, g: 0, b: 255 })
+        }else if(this.properties.STYLE === 3){
+            //draw background
+            //if no background draw missing texture
+            //overlay forecolor filter
+        }
+        //draw border
+        if(this.properties.BORDER !== 0){
+            this.drawBorders(canvas.applyZoom(x), canvas.applyZoom(y), canvas.applyZoom(this.properties.RECT.w), canvas.applyZoom(this.properties.RECT.h));
+        }
+
+        //draw text
+        if(this.properties.TEXT !== ""){
+            
         }
 
 

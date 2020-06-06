@@ -68,6 +68,8 @@ export default class Def {
 
     drawBorders(x, y, width, height) {
         switch (this.properties.BORDER) {
+            case 0:
+                return;
             //full
             case 1:
                 canvas.setFillStyle(this.properties.BORDERCOLOR.r,(this.properties.BORDERCOLOR.g), this.properties.BORDERCOLOR.b, this.properties.BORDERCOLOR.a);
@@ -119,12 +121,12 @@ export default class Def {
         ctx.moveTo(x, y + height);
         ctx.lineTo(x + width, y + height);
         if (angle) {
-            ctx.lineTo((x + width) - this.properties.BORDERSIZE, (y + height) - this.properties.BORDERSIZE);
-            ctx.lineTo(x + this.properties.BORDERSIZE, (y + height) - this.properties.BORDERSIZE);
+            ctx.lineTo((x + width) - canvas.applyZoom(this.properties.BORDERSIZE), (y + height) - canvas.applyZoom(this.properties.BORDERSIZE));
+            ctx.lineTo(x + canvas.applyZoom(this.properties.BORDERSIZE), (y + height) - canvas.applyZoom(this.properties.BORDERSIZE));
         }
         else {
-            ctx.lineTo(x + width, (y + height) - this.properties.BORDERSIZE);
-            ctx.lineTo(x, (y + height) - this.properties.BORDERSIZE);
+            ctx.lineTo(x + width, (y + height) - canvas.applyZoom(this.properties.BORDERSIZE));
+            ctx.lineTo(x, (y + height) - canvas.applyZoom(this.properties.BORDERSIZE));
         }
         ctx.fill();
     }
@@ -136,12 +138,12 @@ export default class Def {
         ctx.lineTo(x, y + height);
         //angle corners if border is aligned with another border
         if (angle) {
-            ctx.lineTo(x + this.properties.BORDERSIZE, (y + height) - this.properties.BORDERSIZE);
-            ctx.lineTo(x + this.properties.BORDERSIZE, y + this.properties.BORDERSIZE);
+            ctx.lineTo(x + canvas.applyZoom(this.properties.BORDERSIZE), (y + height) - canvas.applyZoom(this.properties.BORDERSIZE));
+            ctx.lineTo(x + canvas.applyZoom(this.properties.BORDERSIZE), y + canvas.applyZoom(this.properties.BORDERSIZE));
         }
         else {
-            ctx.lineTo(x + this.properties.BORDERSIZE, y + height);
-            ctx.lineTo(x + this.properties.BORDERSIZE, y);
+            ctx.lineTo(x + canvas.applyZoom(this.properties.BORDERSIZE), y + height);
+            ctx.lineTo(x + canvas.applyZoom(this.properties.BORDERSIZE), y);
         }
         ctx.fill();
     }
@@ -152,12 +154,12 @@ export default class Def {
         ctx.moveTo(x, y);
         ctx.lineTo(x + width, y);
         if (angle) {
-            ctx.lineTo((x + width) - this.properties.BORDERSIZE, y + this.properties.BORDERSIZE);
-            ctx.lineTo(x + this.properties.BORDERSIZE, y + this.properties.BORDERSIZE);
+            ctx.lineTo((x + width) - canvas.applyZoom(this.properties.BORDERSIZE), y + canvas.applyZoom(this.properties.BORDERSIZE));
+            ctx.lineTo(x + canvas.applyZoom(this.properties.BORDERSIZE), y + canvas.applyZoom(this.properties.BORDERSIZE));
         }
         else {
-            ctx.lineTo(x + width, y + this.properties.BORDERSIZE);
-            ctx.lineTo(x, y + this.properties.BORDERSIZE);
+            ctx.lineTo(x + width, y + canvas.applyZoom(this.properties.BORDERSIZE));
+            ctx.lineTo(x, y + canvas.applyZoom(this.properties.BORDERSIZE));
         }
         ctx.fill();
     }
@@ -168,12 +170,12 @@ export default class Def {
         ctx.moveTo(x + width, y);
         ctx.lineTo(x + width, y + height);
         if (angle) {
-            ctx.lineTo((x + width) - this.properties.BORDERSIZE, (y + height) - this.properties.BORDERSIZE);
-            ctx.lineTo((x + width) - this.properties.BORDERSIZE, y + this.properties.BORDERSIZE);
+            ctx.lineTo((x + width) - canvas.applyZoom(this.properties.BORDERSIZE), (y + height) - canvas.applyZoom(this.properties.BORDERSIZE));
+            ctx.lineTo((x + width) - canvas.applyZoom(this.properties.BORDERSIZE), y + canvas.applyZoom(this.properties.BORDERSIZE));
         }
         else {
-            ctx.lineTo((x + width) - this.properties.BORDERSIZE, y + height);
-            ctx.lineTo((x + width) - this.properties.BORDERSIZE, y);
+            ctx.lineTo((x + width) - canvas.applyZoom(this.properties.BORDERSIZE), y + height);
+            ctx.lineTo((x + width) - canvas.applyZoom(this.properties.BORDERSIZE), y);
         }
         ctx.fill();
     }

@@ -5,6 +5,7 @@ import PreProcessor from "./preprocessor.js";
 import Terminal from "./modules/Terminal.js";
 import {canvas} from "./modules/MyCanvas.js";
 import { setEditor } from "./modules/Editor.js";
+import { process } from "./modules/Process.js";
 
 
 
@@ -21,7 +22,10 @@ function init(){
     canvas.setScreenResolution(1);
 
     Terminal.setDiv(document.getElementById("terminal"));
-    Terminal.printText("Welcome to COD4 Menu Builder v2.",{r:255,g:255,b:255});
+    Terminal.printText("Welcome to COD4 Menu Parser.", { r: 255, g: 153,b:0});
+    Terminal.printText("Majority of menu parsing is finished, some option are not yet supported as well as macros.", { r: 255, g: 153, b: 0 });
+    Terminal.printText("Write your code in text editor and press 'Run', or upload your menu file.", { r: 255, g: 153, b: 0 });
+    Terminal.printText("Menu drawing is currently in development.", { r: 255, g: 153, b: 0 });
 
 
     
@@ -36,17 +40,17 @@ function init(){
     });
     resize.addEventListener("mousemove", (event) => {
         if(hoverClick){
-            console.log( );
+            //console.log( );
             resize.parentElement.style.height = `${window.innerHeight-event.pageY}px`;
         }
         
     })
     resize.addEventListener("mouseenter", () =>{
-        console.log("hover");
+        //console.log("hover");
     });
    
 
-    
+    process(edit.getValue())
 }
 
 function eventListeners(){

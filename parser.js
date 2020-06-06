@@ -295,6 +295,8 @@ export default class Parser{
             case "BACKGROUND":
             case "FOCUSSOUND":
             case "GROUP":
+            case "DVAR":
+            case "DVARTEST":
             case "TEXT":
                 this.eat();
                 this.IsString();
@@ -334,7 +336,6 @@ export default class Parser{
             case "FEEDER":
             case "MAXCHARS":
             case "MAXPAINTCHARS":
-            case "NOTSELECTABLE":
             case "SPECIAL":
             case "STYLE":
             case "TEXTALIGN":
@@ -381,6 +382,9 @@ export default class Parser{
             case "AUTOWRAPPED":
             case "DECORATION":
             case "HORIZONTALSCROLL":
+            case "NOTSELECTABLE":
+            case "USEPAGING":
+            case "NOSCROLLBARS":
             case "LEGACYSPLITSCREENSCALE":
             case "MAXCHARSGOTONEXT":
                 this.newMenu.setItemDefProperty(1, this.property);
@@ -402,7 +406,9 @@ export default class Parser{
         switch (this.tok.token) {        
             case "NAME":  
             case "BACKGROUND":
+            case "SELECTICON":
             case "SOUNDLOOP":
+            case "ALLOWBINDING":
                 this.eat();
                 this.IsString();
                 break;
@@ -448,6 +454,7 @@ export default class Parser{
                     }
                 }
                 break;
+            case "SELECTBORDER":
             case "BORDERCOLOR":
             case "BACKCOLOR":
             case "DISABLECOLOR":

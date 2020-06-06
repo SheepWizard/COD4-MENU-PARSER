@@ -23,7 +23,8 @@ MenuStatement   -> name String
                 -> fadeInAmount PrimaryExp
                 -> focuscolor PrimaryExp PrimaryExp PrimaryExp PrimaryExp
                 -> ownerdraw PrimaryExp
-                -> soundloop PrimaryExp
+                -> soundloop String
+                -> allowBinding String
                 -> outOfBoundsClick
                 -> popup
                 -> legacySplitScreenScale

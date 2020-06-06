@@ -174,10 +174,9 @@ function makeTokens() {
     createToken("BORDER", /border/);//menudef itemdef
     createToken("BORDERCOLOR", /bordercolor/);//menudef itemdef
     createToken("BORDERSIZE", /bordersize/);//menudef itemdef
-    createToken("COLUMNS", /columns/);//itemdef
+    //createToken("COLUMNS", /columns/);//itemdef
     createToken("DISABLECOLOR", /disablecolor/);//menudef
     //createToken("DISABLEDVAR", /disableDvar/);
-    //createToken("DVAR", /dvar/);
     //createToken("DVARENUMLIST", /dvarEnumList/);
     //createToken("DVARFLOAT", /dvarFloat/);
     //createToken("DVARFLOATLIST", /dvarFloatList/);
@@ -197,12 +196,18 @@ function makeTokens() {
     createToken("FORECOLOR", /forecolor/);//itemdef menudef
     createToken("FULLSCREEN", /fullscreen/);//menudef
     createToken("GROUP", /group/);//itemdef
+    createToken("ALLOWBINDING", /allowbinding/);//itemdef
+    createToken("SELECTBORDER", /selectborder/);//itemdef
+    createToken("SELECTICON", /selecticon/);//itemdef
+    createToken("USEPAGING", /usePaging/);//itemdef
+    createToken("DVAR", /dvar/);//itemdef
+    createToken("DVARTEST", /dvartest/);//itemdef
     //createToken("HIDEDVAR", /hideDvar/);
     createToken("MAXCHARS", /maxchars/);//itemdef
     createToken("MAXCHARSGOTONEXT", /maxcharsgotonext/);//itemdef
     createToken("MAXPAINTCHARS", /maxpaintchars/);//itemdef
     createToken("NAME", /name/);//itemdef menudef
-    //createToken("NOSCROLLBARS", /noscrollbars/);
+    createToken("NOSCROLLBARS", /noscrollbars/);//itemdef
     createToken("NOTSELECTABLE", /notselectable/);//itemdef
     createToken("ORIGIN", /origin/);//itemdef
     createToken("OUTLINECOLOR", /outlinecolor/);//itemdef
